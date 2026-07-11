@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم الفاخرة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background: #f4f6f9; padding: 20px; text-align: right; }
+        .box { max-width: 800px; background: white; margin: 20px auto; padding: 25px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        h2, h3 { border-bottom: 2px solid #c5a880; padding-bottom: 8px; margin-bottom: 20px; }
+        .group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #0b0b0b; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #c5a880; }
+        .item-row { background: #fafafa; padding: 10px; border: 1px dashed #ccc; margin-bottom: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h2>لوحة إدارة محتوى المتجر الـ 9 أقسام</h2>
+        <h3>١. النصوص العامة والعروض وقنوات التواصل</h3>
+        <div class="group"><label>اسم البراند</label><input type="text" id="brandName"></div>
+        <div class="group"><label>عنوان الواجهة الرئيسية</label><input type="text" id="heroTitle"></div>
+        <div class="group"><label>وصف الواجهة الرئيسية</label><textarea id="heroDesc"></textarea></div>
+        <div class="group"><label>عنوان بانر العروض</label><input type="text" id="offerTitle"></div>
+        <div class="group"><label>تفاصيل العرض الحالي</label><textarea id="offerDesc"></textarea></div>
+        <div class="group"><label>رقم الواتساب (بالصيغة الدولية وبدون أصفار أو علامة + مثلاً 20100xxxxxxx)</label><input type="text" id="whatsapp"></div>
+        <div class="group"><label>رابط فيسبوك</label><input type="text" id="facebook"></div>
+        <div class="group"><label>رابط إنستجرام</label><input type="text" id="instagram"></div>
+        <div class="group"><label>لماذا نحن؟ (اكتب كل نقطة قوة في سطر منفصل)</label><textarea id="whyPoints" style="height:100px;"></textarea></div>
+    </div>
+
+    <div class="box">
+        <h3>٢. قسم أفضل المنتجات</h3>
+        <div id="products-list"></div>
+        <button onclick="addEmptyProduct()">+ إضافة منتج جديد</button>
+    </div>
+
+    <div class="box">
+        <h3>٣. قسم آراء العملاء</h3>
+        <div id="testi-list"></div>
+        <button onclick="addEmptyTesti()">+ إضافة رأي عميل</button>
+    </div>
+
+    <div class="box">
+        <h3>٤. قسم الأسئلة الشائعة</h3>
+        <div id="faqs-list"></div>
+        <button onclick="addEmptyFaq()">+ إضافة سؤال جديد</button>
+        <br><br><br>
+        <button onclick="saveAllStoreData()" style="width:100%; background:#25D366; font-size:18px; padding:15px;">حفظ وتحديث المتجر بالكامل الآن سحابياً 🚀</button>
+    </div>
+
+    <script>
+        // ⚠️ ضع نفس مفاتيح Firebase هنا أيضاً
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref('brandStoreData').once('value').then(snapshot => {
+            const data = snapshot.val();
+            if(!data) return;
+
+            document.getElementById('brandName').value = data.brandName || '';
+            document.getElementById('heroTitle').value = data.heroTitle || '';
+            document.getElementById('heroDesc').value = data.heroDesc || '';
+            document.getElementById('offerTitle').value = data.offerTitle || '';
+            document.getElementById('offerDesc').value = data.offerDesc || '';
+            document.getElementById('whatsapp').value = data.whatsapp || '';
+            document.getElementById('facebook').value = data.facebook || '';
+            document.getElementById('instagram').value = data.instagram || '';
+            document.getElementById('whyPoints').value = data.whyPoints || '';
+
+            if(data.products) data.products.forEach(p => addProductRow(p.name, p.price, p.img));
+            if(data.testimonials) data.testimonials.forEach(t => addTestiRow(t.text, t.author));
+            if(data.faqs) data.faqs.forEach(f => addFaqRow(f.q, f.a));
+        });
+
+        function addProductRow(name='', price='', img='') {
+            const div = document.createElement('div'); div.className = 'item-row product-item';
+            div.innerHTML = `
+                <input type="text" placeholder="اسم المنتج" value="${name}" style="width:30%; margin-left:1%;">
+                <input type="text" placeholder="السعر" value="${price}" style="width:20%; margin-left:1%;">
+                <input type="text" placeholder="رابط صورة المنتج المباشر" value="${img}" style="width:40%; margin-left:1%;">
+                <button onclick="this.parentElement.remove()" style="background:red; padding:5px 10px;">حذف</button>`;
+            document.getElementById('products-list').appendChild(div);
+        }
+        function addEmptyProduct() { addProductRow(); }
+
+        function addTestiRow(text='', author='') {
+            const div = document.createElement('div'); div.className = 'item-row testi-item';
+            div.innerHTML = `
+                <input type="text" placeholder="نص التقييم والرأي" value="${text}" style="width:60%; margin-left:1%;">
+                <input type="text" placeholder="اسم العميل" value="${author}" style="width:30%; margin-left:1%;">
+                <button onclick="this.parentElement.remove()" style="background:red; padding:5px 10px;">حذف</button>`;
+            document.getElementById('testi-list').appendChild(div);
+        }
+        function addEmptyTesti() { addTestiRow(); }
+
+        function addFaqRow(q='', a='') {
+            const div = document.createElement('div'); div.className = 'item-row faq-item-row';
+            div.innerHTML = `
+                <input type="text" placeholder="السؤال" value="${q}" style="width:45%; margin-left:1%;">
+                <textarea placeholder="الإجابة" style="width:45%; margin-left:1%; height:40px; vertical-align:middle;">${a}</textarea>
+                <button onclick="this.parentElement.remove()" style="background:red; padding:5px 10px;">حذف</button>`;
+            document.getElementById('faqs-list').appendChild(div);
+        }
+        function addEmptyFaq() { addFaqRow(); }
+
+        function saveAllStoreData() {
+            const products = [];
+            document.querySelectorAll('.product-item').forEach(el => {
+                const inputs = el.querySelectorAll('input');
+                products.push({ name: inputs[0].value, price: inputs[1].value, img: inputs[2].value });
+            });
+
+            const testimonials = [];
+            document.querySelectorAll('.testi-item').forEach(el => {
+                const inputs = el.querySelectorAll('input');
+                testimonials.push({ text: inputs[0].value, author: inputs[1].value });
+            });
+
+            const faqs = [];
+            document.querySelectorAll('.faq-item-row').forEach(el => {
+                const q = el.querySelector('input').value;
+                const a = el.querySelector('textarea').value;
+                faqs.push({ q: q, a: a });
+            });
+
+            const finalData = {
+                brandName: document.getElementById('brandName').value,
+                heroTitle: document.getElementById('heroTitle').value,
+                heroDesc: document.getElementById('heroDesc').value,
+                offerTitle: document.getElementById('offerTitle').value,
+                offerDesc: document.getElementById('offerDesc').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                facebook: document.getElementById('facebook').value,
+                instagram: document.getElementById('instagram').value,
+                whyPoints: document.getElementById('whyPoints').value,
+                products: products,
+                testimonials: testimonials,
+                faqs: faqs
+            };
+
+            db.ref('brandStoreData').set(finalData)
+                .then(() => alert('تم التحديث وحفظ كافة البيانات على السيرفر السحابي بنجاح! 🌟'))
+                .catch(err => alert('خطأ في الحفظ: ' + err.message));
+        }
+    </script>
+</body>
+</html>

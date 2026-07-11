@@ -3,160 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم الفاخرة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <title>لوحة تحكم المتجر</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; background: #f4f6f9; padding: 20px; text-align: right; }
-        .box { max-width: 800px; background: white; margin: 20px auto; padding: 25px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        h2, h3 { border-bottom: 2px solid #c5a880; padding-bottom: 8px; margin-bottom: 20px; }
-        .group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        button { background: #0b0b0b; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #c5a880; }
-        .item-row { background: #fafafa; padding: 10px; border: 1px dashed #ccc; margin-bottom: 10px; border-radius: 4px; }
+        body { font-family: 'Cairo', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 text-gray-800">
 
-    <div class="box">
-        <h2>لوحة إدارة محتوى المتجر الـ 9 أقسام</h2>
-        <h3>١. النصوص العامة والعروض وقنوات التواصل</h3>
-        <div class="group"><label>اسم البراند</label><input type="text" id="brandName"></div>
-        <div class="group"><label>عنوان الواجهة الرئيسية</label><input type="text" id="heroTitle"></div>
-        <div class="group"><label>وصف الواجهة الرئيسية</label><textarea id="heroDesc"></textarea></div>
-        <div class="group"><label>عنوان بانر العروض</label><input type="text" id="offerTitle"></div>
-        <div class="group"><label>تفاصيل العرض الحالي</label><textarea id="offerDesc"></textarea></div>
-        <div class="group"><label>رقم الواتساب (بالصيغة الدولية وبدون أصفار أو علامة + مثلاً 20100xxxxxxx)</label><input type="text" id="whatsapp"></div>
-        <div class="group"><label>رابط فيسبوك</label><input type="text" id="facebook"></div>
-        <div class="group"><label>رابط إنستجرام</label><input type="text" id="instagram"></div>
-        <div class="group"><label>لماذا نحن؟ (اكتب كل نقطة قوة في سطر منفصل)</label><textarea id="whyPoints" style="height:100px;"></textarea></div>
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8 border-b border-gray-200 pb-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">إدارة المنتجات</h1>
+                <p class="text-slate-500 text-xs mt-1">أضف، عدل أو احذف الملابس من متجرك لايف</p>
+            </div>
+            <a href="index.html" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-eye"></i> عرض المتجر
+            </a>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm mb-8">
+            <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-plus-circle text-indigo-600"></i> إضافة منتج جديد لمتجر الملابس
+            </h2>
+            <form id="product-form" onsubmit="saveProduct(event)" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">اسم القطعة / المنتج *</label>
+                        <input type="text" id="title" required placeholder="مثال: فستان سهرة أسود، تيشرت قطن صيفي" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-indigo-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">القسم *</label>
+                        <select id="category" required class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-indigo-600 bg-white">
+                            <option value="ملابس رجالي">ملابس رجالي</option>
+                            <option value="ملابس حريمي">ملابس حريمي</option>
+                            <option value="ملابس أطفال">ملابس أطفال</option>
+                            <option value="أحذية وإكسسوارات">أحذية وإكسسوارات</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">السعر (بالجنيه المصري) *</label>
+                        <input type="number" id="price" required placeholder="مثال: 350" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-indigo-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">رابط صورة المنتج المباشر</label>
+                        <input type="url" id="image" placeholder="ضع رابط الصورة المباشر هنا (ينتهي بـ .jpg أو .png)" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-left focus:outline-indigo-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">وصف قصير (اختياري)</label>
+                    <textarea id="description" rows="2" placeholder="المقاسات المتاحة، نوع القماش، الألوان..." class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-indigo-600"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition shadow-sm text-sm">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> حفظ ونشر على المتجر فوراً
+                </button>
+            </form>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+            <h2 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-list-check text-indigo-600"></i> منتجاتك المعروضة حالياً</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-gray-100 text-slate-600 font-bold">
+                            <th class="p-3">الصورة</th>
+                            <th class="p-3">المنتج</th>
+                            <th class="p-3">القسم</th>
+                            <th class="p-3">السعر</th>
+                            <th class="p-3 text-center">إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-products-list" class="divide-y divide-gray-100">
+                        <tr>
+                            <td colspan="5" class="text-center py-6 text-gray-400">جاري تحميل المنتجات...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <div class="box">
-        <h3>٢. قسم أفضل المنتجات</h3>
-        <div id="products-list"></div>
-        <button onclick="addEmptyProduct()">+ إضافة منتج جديد</button>
-    </div>
-
-    <div class="box">
-        <h3>٣. قسم آراء العملاء</h3>
-        <div id="testi-list"></div>
-        <button onclick="addEmptyTesti()">+ إضافة رأي عميل</button>
-    </div>
-
-    <div class="box">
-        <h3>٤. قسم الأسئلة الشائعة</h3>
-        <div id="faqs-list"></div>
-        <button onclick="addEmptyFaq()">+ إضافة سؤال جديد</button>
-        <br><br><br>
-        <button onclick="saveAllStoreData()" style="width:100%; background:#25D366; font-size:18px; padding:15px;">حفظ وتحديث المتجر بالكامل الآن سحابياً 🚀</button>
-    </div>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        // ⚠️ ضع نفس مفاتيح Firebase هنا أيضاً
+        // مفاتيح Firebase الخاصة بمشروعك مدمجة وجاهزة
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyC8gv5mxQ2JaMDkQeWTpnit1CHgMh_8zL0",
+            authDomain: "tricycle-for-clothes.firebaseapp.com",
+            databaseURL: "https://tricycle-for-clothes-default-rtdb.firebaseio.com",
+            projectId: "tricycle-for-clothes",
+            storageBucket: "tricycle-for-clothes.firebasestorage.app",
+            messagingSenderId: "599861767922",
+            appId: "1:599861767922:web:04c16f7efc385680842a6b"
         };
+
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        const database = firebase.database();
 
-        db.ref('brandStoreData').once('value').then(snapshot => {
+        // جلب وعرض المنتجات للإدارة
+        database.ref('products').on('value', (snapshot) => {
             const data = snapshot.val();
-            if(!data) return;
+            const tbody = document.getElementById('admin-products-list');
+            
+            if(!data) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">لا توجد منتجات حالياً. املأ النموذج فوق لإضافة أول منتج!</td></tr>';
+                return;
+            }
 
-            document.getElementById('brandName').value = data.brandName || '';
-            document.getElementById('heroTitle').value = data.heroTitle || '';
-            document.getElementById('heroDesc').value = data.heroDesc || '';
-            document.getElementById('offerTitle').value = data.offerTitle || '';
-            document.getElementById('offerDesc').value = data.offerDesc || '';
-            document.getElementById('whatsapp').value = data.whatsapp || '';
-            document.getElementById('facebook').value = data.facebook || '';
-            document.getElementById('instagram').value = data.instagram || '';
-            document.getElementById('whyPoints').value = data.whyPoints || '';
-
-            if(data.products) data.products.forEach(p => addProductRow(p.name, p.price, p.img));
-            if(data.testimonials) data.testimonials.forEach(t => addTestiRow(t.text, t.author));
-            if(data.faqs) data.faqs.forEach(f => addFaqRow(f.q, f.a));
+            tbody.innerHTML = Object.keys(data).map(key => {
+                const p = data[key];
+                return `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="p-3">
+                            <img src="${p.image || 'https://via.placeholder.com/50?text=No'}" class="w-10 h-10 object-cover rounded-lg border border-gray-100">
+                        </td>
+                        <td class="p-3 font-semibold text-slate-900">${p.title}</td>
+                        <td class="p-3"><span class="bg-slate-100 text-slate-700 text-xs px-2 py-1 rounded-md font-medium">${p.category}</span></td>
+                        <td class="p-3 font-bold text-indigo-600">${p.price} ج.م</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteProduct('${key}')" class="bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-xl transition" title="حذف">
+                                <i class="fa-solid fa-trash-can"></i> الحذف
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         });
 
-        function addProductRow(name='', price='', img='') {
-            const div = document.createElement('div'); div.className = 'item-row product-item';
-            div.innerHTML = `
-                <input type="text" placeholder="اسم المنتج" value="${name}" style="width:30%; margin-left:1%;">
-                <input type="text" placeholder="السعر" value="${price}" style="width:20%; margin-left:1%;">
-                <input type="text" placeholder="رابط صورة المنتج المباشر" value="${img}" style="width:40%; margin-left:1%;">
-                <button onclick="this.parentElement.remove()" style="background:red; padding:5px 10px;">حذف</button>`;
-            document.getElementById('products-list').appendChild(div);
-        }
-        function addEmptyProduct() { addProductRow(); }
-
-        function addTestiRow(text='', author='') {
-            const div = document.createElement('div'); div.className = 'item-row testi-item';
-            div.innerHTML = `
-                <input type="text" placeholder="نص التقييم والرأي" value="${text}" style="width:60%; margin-left:1%;">
-                <input type="text" placeholder="اسم العميل" value="${author}" style="width:30%; margin-left:1%;">
-                <button onclick="this.parentElement.remove()" style="background:red; padding:5px 10px;">حذف</button>`;
-            document.getElementById('testi-list').appendChild(div);
-        }
-        function addEmptyTesti() { addTestiRow(); }
-
-        function addFaqRow(q='', a='') {
-            const div = document.createElement('div'); div.className = 'item-row faq-item-row';
-            div.innerHTML = `
-                <input type="text" placeholder="السؤال" value="${q}" style="width:45%; margin-left:1%;">
-                <textarea placeholder="الإجابة" style="width:45%; margin-left:1%; height:40px; vertical-align:middle;">${a}</textarea>
-                <button onclick="this.parentElement.remove()" style="background:red; padding:5px 10px;">حذف</button>`;
-            document.getElementById('faqs-list').appendChild(div);
-        }
-        function addEmptyFaq() { addFaqRow(); }
-
-        function saveAllStoreData() {
-            const products = [];
-            document.querySelectorAll('.product-item').forEach(el => {
-                const inputs = el.querySelectorAll('input');
-                products.push({ name: inputs[0].value, price: inputs[1].value, img: inputs[2].value });
-            });
-
-            const testimonials = [];
-            document.querySelectorAll('.testi-item').forEach(el => {
-                const inputs = el.querySelectorAll('input');
-                testimonials.push({ text: inputs[0].value, author: inputs[1].value });
-            });
-
-            const faqs = [];
-            document.querySelectorAll('.faq-item-row').forEach(el => {
-                const q = el.querySelector('input').value;
-                const a = el.querySelector('textarea').value;
-                faqs.push({ q: q, a: a });
-            });
-
-            const finalData = {
-                brandName: document.getElementById('brandName').value,
-                heroTitle: document.getElementById('heroTitle').value,
-                heroDesc: document.getElementById('heroDesc').value,
-                offerTitle: document.getElementById('offerTitle').value,
-                offerDesc: document.getElementById('offerDesc').value,
-                whatsapp: document.getElementById('whatsapp').value,
-                facebook: document.getElementById('facebook').value,
-                instagram: document.getElementById('instagram').value,
-                whyPoints: document.getElementById('whyPoints').value,
-                products: products,
-                testimonials: testimonials,
-                faqs: faqs
+        // حفظ منتج جديد
+        function saveProduct(e) {
+            e.preventDefault();
+            
+            const productData = {
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                price: document.getElementById('price').value,
+                image: document.getElementById('image').value || 'https://via.placeholder.com/300?text=No+Image',
+                description: document.getElementById('description').value
             };
 
-            db.ref('brandStoreData').set(finalData)
-                .then(() => alert('تم التحديث وحفظ كافة البيانات على السيرفر السحابي بنجاح! 🌟'))
-                .catch(err => alert('خطأ في الحفظ: ' + err.message));
+            database.ref('products').push(productData)
+                .then(() => {
+                    alert('📦 تم حفظ المنتج ونشره على المتجر بنجاح!');
+                    document.getElementById('product-form').reset();
+                })
+                .catch((error) => {
+                    alert('❌ حدث خطأ أثناء الحفظ: ' + error.message);
+                });
+        }
+
+        // حذف منتج
+        function deleteProduct(key) {
+            if(confirm('هل أنت متأكد تماماً من حذف هذه القطعة من المتجر؟')) {
+                database.ref(`products/${key}`).remove()
+                    .then(() => alert('🗑️ تم الحذف بنجاح!'))
+                    .catch((error) => alert('خطأ في الحذف: ' + error.message));
+            }
         }
     </script>
 </body>

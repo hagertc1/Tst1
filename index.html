@@ -3,120 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم الفاخرة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>الموقع الرسمي | واجهة فاخرة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+
     <style>
-        body { font-family: 'Cairo', sans-serif; background: #f4f6f9; padding: 20px; text-align: right; }
-        .box { max-width: 800px; background: white; margin: 20px auto; padding: 25px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        h2, h3 { border-bottom: 2px solid #c5a880; padding-bottom: 8px; margin-bottom: 20px; }
-        .group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        .hint { color: #888; font-size: 12px; margin-top: 4px; display: block; }
-        button { background: #0b0b0b; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #c5a880; }
-        .item-row { background: #fafafa; padding: 10px; border: 1px dashed #ccc; margin-bottom: 10px; border-radius: 4px; }
-        .upload-wrap { display: inline-flex; align-items: center; gap: 6px; vertical-align: middle; margin-left: 1%; }
-        .upload-btn { background: #c5a880; padding: 8px 12px; font-size: 12px; white-space: nowrap; }
-        .upload-btn:hover { background: #0b0b0b; }
-        .upload-progress-bar { width: 60px; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; display: none; }
-        .upload-progress-fill { height: 100%; width: 0%; background: #25D366; transition: width 0.2s; }
-        .upload-status { font-size: 11px; color: #888; }
-        .status-msg { margin-top: 12px; font-weight: bold; font-size: 14px; }
-        .status-ok { color: #1ebe5d; }
-        .status-err { color: #d13a3a; }
+        :root {
+            --primary: #0b0b0b;
+            --accent: #c5a880;
+            --bg-light: #f9f9f9;
+            --white: #ffffff;
+            --text-dark: #222222;
+            --text-light: #666666;
+            --transition: all 0.3s ease-in-out;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; scroll-behavior: smooth; }
+        body { color: var(--text-dark); background: var(--white); overflow-x: hidden; }
+
+        /* 1. Header */
+        header { position: fixed; top: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 24px; font-weight: 700; color: var(--primary); }
+        .logo img { height: 55px; width: auto; display: block; }
+        .nav-links { display: flex; list-style: none; gap: 20px; }
+        .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 600; transition: var(--transition); font-size: 14px; }
+        .nav-links a:hover { color: var(--accent); }
+        .btn-header-wa { background: #25D366; color: white; padding: 8px 18px; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: var(--transition); }
+        .btn-header-wa:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(37,211,102,0.3); }
+
+        /* 2. Hero Section */
+        .hero { height: 80vh; margin-top: 70px; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600') no-repeat center center/cover; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: var(--white); padding: 0 20px; }
+        .hero h1 { font-size: 42px; font-weight: 700; margin-bottom: 15px; }
+        .hero p { font-size: 18px; max-width: 600px; margin-bottom: 30px; color: #ddd; }
+        .hero-btns { display: flex; gap: 15px; }
+        .btn-main { background: var(--accent); color: white; padding: 12px 25px; text-decoration: none; font-weight: 600; transition: var(--transition); border: none; cursor: pointer; }
+        .btn-main:hover { background: var(--primary); }
+        .btn-wa-hero { background: #25D366; color: white; padding: 12px 25px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: var(--transition); }
+
+        /* Global Sections */
+        section { padding: 70px 5%; text-align: center; }
+        .sec-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+        .sec-title::after { content: ''; display: block; width: 40px; height: 3px; background: var(--accent); margin: 8px auto 0; }
+        .sec-desc { color: var(--text-light); margin-bottom: 40px; font-size: 15px; }
+
+        /* 3. Categories Showcase (luxury, mobile-first, animated) */
+        .categories-section {
+            --cat-primary: #C9A36B;
+            --cat-radius: 20px;
+            --cat-duration: 600ms;
+            --cat-y: 24px;
+        }
+        .categories-showcase {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .cat-card {
+            position: relative;
+            overflow: hidden;
+            background: #fff;
+            border-radius: var(--cat-radius);
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 22px 8px;
+            aspect-ratio: 1/1;
+            text-decoration: none;
+            color: var(--text-dark);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            will-change: transform;
+            --y: var(--cat-y);
+            --scale: 1;
+            opacity: 0;
+            transform: translateY(var(--y)) scale(var(--scale));
+            transition: opacity var(--cat-duration) ease, transform var(--cat-duration) cubic-bezier(.22,1,.36,1), box-shadow 300ms ease;
+        }
+        .cat-card.is-visible { opacity: 1; --y: 0px; }
+        .cat-card.is-pressed { --scale: 0.96; transition-duration: 120ms; }
+        .cat-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; color: var(--cat-primary); }
+        .cat-icon i { font-size: 26px; transition: transform 300ms ease; }
+        .cat-name { font-size: clamp(12px, 3vw, 15px); font-weight: 700; text-align: center; line-height: 1.3; }
+        .cat-ripple { position: absolute; border-radius: 50%; background: rgba(201,163,107,0.25); transform: scale(0); animation: catRipple 500ms ease-out; pointer-events: none; }
+        @keyframes catRipple { to { transform: scale(2.2); opacity: 0; } }
+        @media (hover: hover) and (pointer: fine) {
+            .cat-card:hover { --y: -8px; box-shadow: 0 16px 30px rgba(0,0,0,0.12); }
+            .cat-card:hover .cat-icon i { transform: scale(1.15); }
+        }
+        @media (min-width: 1024px) {
+            .categories-showcase { grid-template-columns: repeat(6, 1fr); gap: 20px; }
+        }
+
+        /* 4. Features */
+        .features { background: var(--bg-light); }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px; }
+        .feat-box i { font-size: 35px; color: var(--accent); margin-bottom: 15px; }
+        .feat-box h3 { margin-bottom: 8px; font-size: 18px; }
+        .feat-box p { color: var(--text-light); font-size: 14px; }
+
+        /* 5. Products (horizontal scroll carousel) */
+        .products-grid {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 10px 5px;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .products-grid::-webkit-scrollbar { display: none; }
+
+        .prod-card {
+            min-width: 270px;
+            max-width: 270px;
+            flex: 0 0 auto;
+            scroll-snap-align: start;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: var(--transition);
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+        }
+        .prod-card:hover { transform: translateY(-6px); box-shadow: 0 10px 25px rgba(0,0,0,0.12); }
+
+        .prod-img-wrapper { width: 100%; aspect-ratio: 1/1; position: relative; background: #fafafa; }
+        .prod-img { width: 100%; height: 100%; object-fit: cover; }
+        .prod-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: var(--accent); font-size: 10px; font-weight: bold; padding: 4px 8px; border-radius: 2px; }
+        .prod-info { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .prod-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .prod-desc { font-size: 12px; color: var(--text-light); margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .prod-price { color: var(--accent); font-weight: 700; font-size: 17px; margin-bottom: 12px; }
+        .btn-prod-order { background: var(--primary); color: white; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 10px; text-decoration: none; font-weight: 600; border-radius: 4px; transition: var(--transition); text-align: center; font-size: 13px; margin-top: auto; }
+
+        /* 6. Offers Banner */
+        .offers-banner { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1479064555552-3ef4979f8908?q=80&w=1600') no-repeat center center/cover; color: white; padding: 80px 20px; }
+        .offers-banner h2 { font-size: 32px; margin-bottom: 10px; color: var(--accent); }
+
+        /* 7. Why Us */
+        .why-us { background: var(--bg-light); }
+        .why-content { max-width: 800px; margin: 0 auto; text-align: right; line-height: 1.8; }
+        .why-point { margin-bottom: 15px; display: flex; gap: 10px; align-items: flex-start; }
+        .why-point i { color: var(--accent); margin-top: 5px; }
+
+        /* 8. Testimonials (screenshots slider) */
+        .testi-grid {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 10px 5px;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .testi-grid::-webkit-scrollbar { display: none; }
+        .testi-card { min-width: 240px; max-width: 240px; flex: 0 0 auto; scroll-snap-align: start; border-radius: 10px; overflow: hidden; border: 1px solid #eee; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: var(--transition); cursor: pointer; }
+        .testi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 22px rgba(0,0,0,0.12); }
+        .testi-img { width: 100%; height: auto; display: block; }
+
+        @media (max-width: 768px) {
+            .testi-card { min-width: 190px; max-width: 190px; }
+        }
+
+        /* 9. FAQs */
+        .faqs { background: var(--bg-light); }
+        .faq-container { max-width: 750px; margin: 0 auto; text-align: right; }
+        .faq-item { background: white; margin-bottom: 10px; border-radius: 4px; overflow: hidden; border: 1px solid #eee; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #fff; font-size: 14px; }
+        .faq-a { padding: 0 15px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; color: var(--text-light); font-size: 13px; line-height: 1.6; }
+        .faq-item.active .faq-a { padding: 15px; max-height: 200px; border-top: 1px solid #eee; }
+
+        /* Footer */
+        footer { background: #000; color: #777; padding: 30px 5%; font-size: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-top: 1px solid #222; }
+        .footer-socials a { color: white; margin-right: 15px; font-size: 18px; transition: var(--transition); }
+        .footer-socials a:hover { color: var(--accent); }
+
+        /* Floating WhatsApp button */
+        .floating-wa {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background: #25D366;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            text-decoration: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            z-index: 9999;
+            transition: 0.3s;
+        }
+        .floating-wa:hover { transform: scale(1.1); background: #1ebe5d; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .floating-wa { width: 46px; height: 46px; font-size: 20px; left: 12px; bottom: 12px; }
+            .products-grid { gap: 12px; }
+            .prod-card { min-width: 180px; max-width: 180px; }
+            .prod-img-wrapper { aspect-ratio: 1/1; }
+            .prod-title { font-size: 13px; }
+            .prod-price { font-size: 15px; }
+            .btn-prod-order { font-size: 12px; padding: 8px; }
+            .nav-links { display: none; }
+            .hero h1 { font-size: 30px; }
+            footer { flex-direction: column; text-align: center; }
+
+            /* عنوان الموقع (الشعار) وزر الواتساب في الهيدر تصغير للموبايل */
+            header { padding: 10px 4%; }
+            .logo { font-size: 15px; gap: 6px; }
+            .logo img { height: 36px; }
+            .btn-header-wa { padding: 6px 10px; font-size: 11px; gap: 5px; }
+            .btn-header-wa i { font-size: 13px; }
+        }
+        @media (max-width: 380px) {
+            .btn-header-wa span.wa-label { display: none; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="box">
-        <h2>لوحة إدارة محتوى المتجر</h2>
-        <h3 style="border-bottom:none; margin-bottom:10px;">إعدادات رفع الصور (مجانية بالكامل عبر ImgBB)</h3>
-        <p class="hint" style="background:#fff8ec; border:1px solid #f0dfb8; padding:10px; border-radius:4px; margin-bottom:15px;">
-            بدل Firebase Storage اللي بقى محتاج خطة مدفوعة (Blaze)، استخدمنا <strong>ImgBB</strong> لرفع الصور، وهي خدمة مجانية 100% من غير أي بطاقة ائتمان:<br>
-            ١) روح <strong>api.imgbb.com</strong> وسجّل حساب مجاني.<br>
-            ٢) من نفس الصفحة اضغط "Get API Key" وانسخه.<br>
-            ٣) الصقه في الحقل تحت واحفظ — بعدها زرار "رفع صورة" هيشتغل في كل الأقسام.
-        </p>
-        <div class="group"><label>مفتاح ImgBB API</label><input type="text" id="imgbbApiKey" placeholder="مثال: 3a1f9c2b8e7d4a5f6c1b0e9d8a7c6b5f"></div>
-        <h3>١. النصوص العامة والعروض وقنوات التواصل</h3>
-        <div class="group"><label>اسم البراند</label><input type="text" id="brandName"></div>
 
-        <div class="group">
-            <label>شعار المتجر (Logo)</label>
-            <input type="text" id="logoUrl" placeholder="رابط الشعار المباشر" oninput="updatePreview(this, '#logoPreview')">
-            <span class="upload-wrap">
-                <input type="file" accept="image/*" class="upload-file-input" style="display:none;" onchange="uploadSingleImage(this, 'branding', 'logoUrl', 'logoPreview')">
-                <button type="button" class="upload-btn" onclick="this.parentElement.querySelector('.upload-file-input').click()">رفع صورة</button>
-                <span class="upload-progress-bar"><span class="upload-progress-fill"></span></span>
-                <span class="upload-status"></span>
-            </span>
-            <img id="logoPreview" src="" style="width:50px; height:50px; object-fit:contain; border-radius:4px; vertical-align:middle; margin-top:8px; display:none;" onerror="this.style.display='none';">
+    <header>
+        <a href="#" class="logo">
+            <img id="logo-img" src="logo.png" alt="Logo" loading="lazy">
+            <span id="logo-text">جاري التحميل...</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#">الرئيسية</a></li>
+            <li><a href="#products">المنتجات</a></li>
+            <li><a href="#why-us">لماذا نحن</a></li>
+            <li><a href="#testimonials">الآراء</a></li>
+            <li><a href="#faqs">الأسئلة الشائعة</a></li>
+        </ul>
+        <a href="#" id="header-wa-btn" class="btn-header-wa" target="_blank"><i class="fab fa-whatsapp"></i> <span class="wa-label">اطلب عبر واتساب</span></a>
+    </header>
+
+    <section class="hero" id="hero-section">
+        <h1 id="hero-title">جاري تحميل العناوين...</h1>
+        <p id="hero-desc">يرجى الانتظار ثوانٍ لجلب البيانات السحابية الحية.</p>
+        <div class="hero-btns">
+            <a href="#products" class="btn-main">تصفح المنتجات</a>
+            <a href="#" id="hero-wa-btn" class="btn-wa-hero" target="_blank"><i class="fab fa-whatsapp"></i> واتساب البراند</a>
         </div>
+    </section>
 
-        <div class="group">
-            <label>صورة خلفية الواجهة الرئيسية (Hero Background)</label>
-            <input type="text" id="heroBgUrl" placeholder="رابط صورة الخلفية المباشر" oninput="updatePreview(this, '#heroBgPreview')">
-            <span class="upload-wrap">
-                <input type="file" accept="image/*" class="upload-file-input" style="display:none;" onchange="uploadSingleImage(this, 'branding', 'heroBgUrl', 'heroBgPreview')">
-                <button type="button" class="upload-btn" onclick="this.parentElement.querySelector('.upload-file-input').click()">رفع صورة</button>
-                <span class="upload-progress-bar"><span class="upload-progress-fill"></span></span>
-                <span class="upload-status"></span>
-            </span>
-            <img id="heroBgPreview" src="" style="width:90px; height:50px; object-fit:cover; border-radius:4px; vertical-align:middle; margin-top:8px; display:none;" onerror="this.style.display='none';">
+    <section class="categories-section" id="categories" aria-label="أقسام المتجر">
+        <h2 class="sec-title">أقسام المتجر</h2>
+        <p class="sec-desc">تصفح تشكيلاتنا المتنوعة والحصرية</p>
+        <div class="categories-showcase" id="categories-showcase">
+            <a href="#products" class="cat-card">
+                <div class="cat-icon"><i class="fas fa-person-dress"></i></div>
+                <span class="cat-name">ملابس حريمي</span>
+            </a>
+            <a href="#products" class="cat-card">
+                <div class="cat-icon"><i class="fas fa-person"></i></div>
+                <span class="cat-name">ملابس رجالي</span>
+            </a>
+            <a href="#products" class="cat-card">
+                <div class="cat-icon"><i class="fas fa-child"></i></div>
+                <span class="cat-name">ملابس أطفال</span>
+            </a>
+            <a href="#products" class="cat-card">
+                <div class="cat-icon"><i class="fas fa-bed"></i></div>
+                <span class="cat-name">مفروشات</span>
+            </a>
+            <a href="#products" class="cat-card">
+                <div class="cat-icon"><i class="fas fa-crown"></i></div>
+                <span class="cat-name">تجهيز عرائس</span>
+            </a>
+            <a href="#products" class="cat-card">
+                <div class="cat-icon"><i class="fas fa-gem"></i></div>
+                <span class="cat-name">عطور وإكسسوارات</span>
+            </a>
         </div>
+    </section>
 
-        <div class="group"><label>عنوان الواجهة الرئيسية</label><input type="text" id="heroTitle"></div>
-        <div class="group"><label>وصف الواجهة الرئيسية</label><textarea id="heroDesc"></textarea></div>
-        <div class="group"><label>عنوان بانر العروض</label><input type="text" id="offerTitle"></div>
-        <div class="group"><label>تفاصيل العرض الحالي</label><textarea id="offerDesc"></textarea></div>
-
-        <div class="group">
-            <label>صورة خلفية بانر العروض</label>
-            <input type="text" id="offerBgUrl" placeholder="رابط صورة الخلفية المباشر" oninput="updatePreview(this, '#offerBgPreview')">
-            <span class="upload-wrap">
-                <input type="file" accept="image/*" class="upload-file-input" style="display:none;" onchange="uploadSingleImage(this, 'branding', 'offerBgUrl', 'offerBgPreview')">
-                <button type="button" class="upload-btn" onclick="this.parentElement.querySelector('.upload-file-input').click()">رفع صورة</button>
-                <span class="upload-progress-bar"><span class="upload-progress-fill"></span></span>
-                <span class="upload-status"></span>
-            </span>
-            <img id="offerBgPreview" src="" style="width:90px; height:50px; object-fit:cover; border-radius:4px; vertical-align:middle; margin-top:8px; display:none;" onerror="this.style.display='none';">
+    <section id="products">
+        <h2 class="sec-title">أفضل المنتجات المتاحة</h2>
+        <p class="sec-desc">القطع الأكثر طلباً وتميزاً في مجموعتنا</p>
+        <div class="products-grid" id="products-container">
+            <div class="col-span-full text-center py-12 text-gray-400">جاري تحميل المعروضات لايف...</div>
         </div>
+    </section>
 
-        <div class="group"><label>رقم الواتساب (بالصيغة الدولية وبدون أصفار أو علامة +)</label><input type="text" id="whatsapp"></div>
-        <div class="group"><label>رابط فيسبوك</label><input type="text" id="facebook"></div>
-        <div class="group"><label>رابط إنستجرام</label><input type="text" id="instagram"></div>
-        <div class="group"><label>لماذا نحن؟ (اكتب كل نقطة قوة في سطر منفصل)</label><textarea id="whyPoints" style="height:100px;"></textarea></div>
-    </div>
+    <section id="offers" class="offers-banner">
+        <h2 id="offer-title">عروض الموسم الحالية</h2>
+        <p id="offer-desc" style="font-size: 18px; max-width: 600px; margin: 0 auto 25px;">استمتع بخصومات حصرية لفترة محدودة على تشكيلات مختارة.</p>
+        <a href="#products" class="btn-main">اغتنم الفرصة الآن</a>
+    </section>
 
-    <div class="box">
-        <h3>٢. قسم أفضل المنتجات</h3>
-        <p class="hint" style="margin-bottom:15px;">اكتب رابط صورة مباشر، أو ارفع الصورة من جهازك مباشرة زر "رفع صورة" وهيتحط الرابط تلقائي.</p>
-        <div id="products-list"></div>
-        <button onclick="addEmptyProduct()">+ إضافة منتج جديد</button>
-    </div>
+    <section class="why-us" id="why-us">
+        <h2 class="sec-title">نقاط القوة والثقة</h2>
+        <p class="sec-desc">التزامنا تجاه عملائنا الكرام</p>
+        <div class="why-content" id="why-container">
+            <!-- سيتم توليد نقاط لماذا نحن هنا تلقائياً -->
+        </div>
+    </section>
 
-    <div class="box">
-        <h3>٣. قسم آراء العملاء</h3>
-        <p class="hint" style="margin-bottom:15px;">الآراء بتظهر في الموقع كصور سكرين شوت (من محادثات الواتساب مثلاً). اكتب رابط الصورة المباشر أو ارفعها من جهازك مباشرة.</p>
-        <div id="testi-list"></div>
-        <button onclick="addEmptyTesti()">+ إضافة رأي عميل</button>
-    </div>
+    <section id="testimonials">
+        <h2 class="sec-title">ماذا يقول عملاؤنا؟</h2>
+        <p class="sec-desc">شهادات وتجارب حقيقية نفخر بها</p>
+        <div class="testi-grid" id="testi-container">
+            <div class="col-span-full text-center py-4 text-gray-400">جاري جلب الآراء...</div>
+        </div>
+    </section>
 
-    <div class="box">
-        <h3>٤. قسم الأسئلة الشائعة</h3>
-        <div id="faqs-list"></div>
-        <button onclick="addEmptyFaq()">+ إضافة سؤال جديد</button>
-    </div>
+    <section class="faqs" id="faqs">
+        <h2 class="sec-title">الأسئلة الشائعة</h2>
+        <p class="sec-desc">إجابات سريعة على أهم استفساراتكم</p>
+        <div class="faq-container" id="faqs-container">
+            <div class="col-span-full text-center py-4 text-gray-400">جاري جلب الأسئلة...</div>
+        </div>
+    </section>
 
-    <div class="box">
-        <button onclick="saveAllStoreData()" style="width:100%; background:#25D366; font-size:18px; padding:15px;">حفظ وتحديث المتجر بالكامل الآن سحابياً 🚀</button>
-        <div id="saveStatus" class="status-msg"></div>
-    </div>
+    <footer>
+        <p>&copy; ٢٠٢٦ جميع الحقوق محفوظة لـ <span id="footer-brand">متجر الملابس والأزياء</span></p>
+        <div class="footer-socials">
+            <a href="#" id="fb-link" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="#" id="ig-link" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+    </footer>
+
+    <a href="#" id="floating-wa" class="floating-wa" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <script>
+        // إعدادات Firebase الخاصة بمشروعك
         const firebaseConfig = {
             apiKey: "AIzaSyC8gv5mxQ2JaMDkQeWTpnit1CHgMh_8zL0",
             authDomain: "tricycle-for-clothes.firebaseapp.com",
@@ -126,10 +356,12 @@
             messagingSenderId: "599861767922",
             appId: "1:599861767922:web:04c16f7efc385680842a6b"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
 
-        function escapeAttr(str) {
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // دالة بسيطة للحماية من هجمات XSS عند حقن نصوص قادمة من قاعدة البيانات
+        function escapeHtml(str) {
             if (str === undefined || str === null) return "";
             return String(str)
                 .replace(/&/g, "&amp;")
@@ -139,598 +371,197 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // جلب البيانات
-        db.ref('brandStoreData').once('value').then(snapshot => {
+        // الاستماع لايف لمسار اللوحة الفاخرة الموحد brandStoreData
+        database.ref('brandStoreData').on('value', (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
 
-            document.getElementById('brandName').value = data.brandName || '';
-            document.getElementById('imgbbApiKey').value = data.imgbbApiKey || '';
-            document.getElementById('logoUrl').value = data.logoUrl || '';
-            document.getElementById('heroBgUrl').value = data.heroBgUrl || '';
-            document.getElementById('offerBgUrl').value = data.offerBgUrl || '';
-            updatePreview(document.getElementById('logoUrl'), '#logoPreview');
-            updatePreview(document.getElementById('heroBgUrl'), '#heroBgPreview');
-            updatePreview(document.getElementById('offerBgUrl'), '#offerBgPreview');
-            document.getElementById('heroTitle').value = data.heroTitle || '';
-            document.getElementById('heroDesc').value = data.heroDesc || '';
-            document.getElementById('offerTitle').value = data.offerTitle || '';
-            document.getElementById('offerDesc').value = data.offerDesc || '';
-            document.getElementById('whatsapp').value = data.whatsapp || '';
-            document.getElementById('facebook').value = data.facebook || '';
-            document.getElementById('instagram').value = data.instagram || '';
-            document.getElementById('whyPoints').value = data.whyPoints || '';
+            // 1. تحديث النصوص وقنوات التواصل
+            const brandName = data.brandName || "متجر الملابس";
+            const currentWhatsapp = data.whatsapp || "201068424130";
 
-            if (data.products) data.products.forEach(p => addProductRow(p.name, p.price, p.img));
-            if (data.testimonials) data.testimonials.forEach(t => addTestiRow(typeof t === 'string' ? t : (t.img || '')));
-            if (data.faqs) data.faqs.forEach(f => addFaqRow(f.q, f.a));
-        }).catch(err => {
-            console.error(err);
-            showStatus('saveStatus', 'تعذر تحميل البيانات الحالية: ' + err.message, false);
+            document.getElementById('logo-text').innerText = brandName;
+            document.getElementById('footer-brand').innerText = brandName;
+            const logoImg = document.getElementById('logo-img');
+            logoImg.src = data.logoUrl || 'logo.png';
+
+            const heroSection = document.getElementById('hero-section');
+            const heroBg = data.heroBgUrl || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600';
+            heroSection.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${heroBg}')`;
+
+            document.getElementById('hero-title').innerText = data.heroTitle || "أحدث صيحات الموضة والملابس";
+            document.getElementById('hero-desc').innerText = data.heroDesc || "";
+            document.getElementById('offer-title').innerText = data.offerTitle || "عروض الموسم الحالية";
+            document.getElementById('offer-desc').innerText = data.offerDesc || "";
+
+            const offersSection = document.getElementById('offers');
+            const offerBg = data.offerBgUrl || 'https://images.unsplash.com/photo-1479064555552-3ef4979f8908?q=80&w=1600';
+            offersSection.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('${offerBg}')`;
+
+            // تحديث روابط التواصل والواتساب
+            const waUrl = `https://api.whatsapp.com/send?phone=${currentWhatsapp}`;
+            document.getElementById('floating-wa').href = waUrl;
+            document.getElementById('header-wa-btn').href = waUrl;
+            document.getElementById('hero-wa-btn').href = waUrl;
+            document.getElementById('fb-link').href = data.facebook || "https://facebook.com";
+            document.getElementById('ig-link').href = data.instagram || "https://instagram.com";
+
+            // 2. تحديث قسم "لماذا نحن"
+            const whyContainer = document.getElementById('why-container');
+            if (data.whyPoints) {
+                const lines = data.whyPoints.split('\n').filter(line => line.trim() !== '');
+                whyContainer.innerHTML = lines.map(line => `
+                    <div class="why-point">
+                        <i class="fas fa-check-circle"></i>
+                        <p>${escapeHtml(line)}</p>
+                    </div>
+                `).join('');
+            } else {
+                whyContainer.innerHTML = '<p class="text-center text-gray-400">سيتم إضافة نقاط القوة قريباً.</p>';
+            }
+
+            // 3. تحديث المنتجات
+            const productsContainer = document.getElementById('products-container');
+            if (data.products && data.products.length > 0) {
+                productsContainer.innerHTML = data.products.map(p => {
+                    return `
+                        <div class="prod-card">
+                            <div class="prod-img-wrapper">
+                                <img class="prod-img" src="${escapeHtml(p.img) || 'https://via.placeholder.com/300?text=No+Image'}" alt="${escapeHtml(p.name)}" loading="lazy">
+                            </div>
+                            <div class="prod-info">
+                                <div>
+                                    <h3 class="prod-title">${escapeHtml(p.name)}</h3>
+                                </div>
+                                <div>
+                                    <p class="prod-price">${escapeHtml(p.price)}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                }).join('');
+            } else {
+                productsContainer.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">لا توجد منتجات حالياً، أضف بعض المنتجات من لوحة التحكم!</div>';
+            }
+
+            // 4. تحديث آراء العملاء (صور سكرين شوت من الواتساب، الرابط بيتحط من لوحة التحكم)
+            const testiContainer = document.getElementById('testi-container');
+            if (data.testimonials && data.testimonials.length > 0) {
+                testiContainer.innerHTML = data.testimonials.map(t => {
+                    const imgUrl = escapeHtml(t.img || t);
+                    return `
+                        <div class="testi-card" onclick="window.open('${imgUrl}', '_blank')">
+                            <img class="testi-img" src="${imgUrl}" alt="رأي عميل" loading="lazy">
+                        </div>`;
+                }).join('');
+            } else {
+                testiContainer.innerHTML = '<div class="col-span-full text-center py-4 text-gray-400">سيتم نشر تقييمات العملاء قريباً.</div>';
+            }
+
+            // 5. تحديث الأسئلة الشائعة
+            const faqsContainer = document.getElementById('faqs-container');
+            if (data.faqs && data.faqs.length > 0) {
+                faqsContainer.innerHTML = data.faqs.map(f => `
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)">${escapeHtml(f.q)} <i class="fas fa-chevron-down"></i></div>
+                        <div class="faq-a"><p>${escapeHtml(f.a)}</p></div>
+                    </div>
+                `).join('');
+            } else {
+                faqsContainer.innerHTML = '<div class="col-span-full text-center py-4 text-gray-400">لا توجد أسئلة شائعة حالياً.</div>';
+            }
         });
 
-        function addProductRow(name = '', price = '', img = '') {
-            const div = document.createElement('div'); div.className = 'item-row product-item';
-            div.innerHTML = `
-                <input type="text" placeholder="اسم المنتج" value="${escapeAttr(name)}" style="width:22%; margin-left:1%;">
-                <input type="text" placeholder="السعر" value="${escapeAttr(price)}" style="width:15%; margin-left:1%;">
-                <input type="text" class="prod-img-input" placeholder="رابط صورة المنتج المباشر" value="${escapeAttr(img)}" style="width:30%; margin-left:1%;" oninput="updatePreview(this, '.prod-preview')">
-                <span class="upload-wrap">
-                    <input type="file" accept="image/*" class="upload-file-input" style="display:none;" onchange="uploadFileToStorage(this, 'products')">
-                    <button type="button" class="upload-btn" onclick="this.parentElement.querySelector('.upload-file-input').click()">رفع صورة</button>
-                    <span class="upload-progress-bar"><span class="upload-progress-fill"></span></span>
-                    <span class="upload-status"></span>
-                </span>
-                <img class="prod-preview" src="${escapeAttr(img)}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; vertical-align:middle; margin-left:1%; ${img ? '' : 'display:none;'}" onerror="this.style.display='none';">
-                <button onclick="removeRow(this)" style="background:red; padding:5px 10px;">حذف</button>`;
-            document.getElementById('products-list').appendChild(div);
-        }
-        function addEmptyProduct() { addProductRow(); }
-
-        function addTestiRow(img = '') {
-            const div = document.createElement('div'); div.className = 'item-row testi-item';
-            div.innerHTML = `
-                <input type="text" class="testi-img-input" placeholder="رابط صورة (سكرين شوت رأي العميل)" value="${escapeAttr(img)}" style="width:50%; margin-left:1%;" oninput="updatePreview(this, '.testi-preview')">
-                <span class="upload-wrap">
-                    <input type="file" accept="image/*" class="upload-file-input" style="display:none;" onchange="uploadFileToStorage(this, 'testimonials')">
-                    <button type="button" class="upload-btn" onclick="this.parentElement.querySelector('.upload-file-input').click()">رفع صورة</button>
-                    <span class="upload-progress-bar"><span class="upload-progress-fill"></span></span>
-                    <span class="upload-status"></span>
-                </span>
-                <img class="testi-preview" src="${escapeAttr(img)}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; vertical-align:middle; margin-left:1%; ${img ? '' : 'display:none;'}" onerror="this.style.display='none';">
-                <button onclick="removeRow(this)" style="background:red; padding:5px 10px;">حذف</button>`;
-            document.getElementById('testi-list').appendChild(div);
-        }
-        function addEmptyTesti() { addTestiRow(''); }
-
-        function updatePreview(input, previewSelector) {
-            const preview = input.parentElement.querySelector(previewSelector);
-            if (!preview) return;
-            if (input.value.trim()) {
-                preview.src = input.value.trim();
-                preview.style.display = 'inline-block';
-            } else {
-                preview.style.display = 'none';
+        // دالة فتح وإغلاق الأسئلة الشائعة برفق
+        function toggleFaq(element) {
+            const item = element.parentElement;
+            const isOpen = item.classList.contains('active');
+            document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
+            if (!isOpen) {
+                item.classList.add('active');
             }
         }
 
-        function performUpload(file, folder, { onProgress, onError, onComplete }) {
-            const apiKey = document.getElementById('imgbbApiKey').value.trim();
-            if (!apiKey) {
-                onError({ message: 'من فضلك أدخل مفتاح ImgBB API أولاً.' });
-                return;
-            }
-            const formData = new FormData();
-            formData.append('image', file);
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', `https://api.imgbb.com/1/upload?key=${encodeURIComponent(apiKey)}`);
-            xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
-            });
-            xhr.onload = () => {
-                try {
-                    const res = JSON.parse(xhr.responseText);
-                    if (xhr.status >= 200 && xhr.status < 300 && res.success) {
-                        onComplete(res.data.url);
-                    } else {
-                        onError({ message: res.error?.message || 'فشل الرفع' });
-                    }
-                } catch (e) {
-                    onError({ message: 'خطأ في الاستجابة' });
-                }
-            };
-            xhr.onerror = () => onError({ message: 'تعذر الاتصال' });
-            xhr.send(formData);
+        // تمرير تلقائي هادئ لأي شريط أفقي (منتجات / آراء العملاء)، يتوقف عند تمرير الفأرة فوقه
+        function enableAutoSlider(elementId, speed = 1, intervalMs = 30) {
+            const slider = document.getElementById(elementId);
+            if (!slider) return;
+
+            let direction = 1;
+            let paused = false;
+
+            slider.addEventListener('mouseenter', () => paused = true);
+            slider.addEventListener('mouseleave', () => paused = false);
+            slider.addEventListener('touchstart', () => paused = true, { passive: true });
+            slider.addEventListener('touchend', () => paused = false, { passive: true });
+
+            setInterval(() => {
+                if (paused) return;
+                const maxScroll = slider.scrollWidth - slider.clientWidth;
+                if (maxScroll <= 0) return;
+
+                if (slider.scrollLeft <= 0) direction = 1;
+                if (slider.scrollLeft >= maxScroll - 2) direction = -1;
+
+                slider.scrollLeft += direction * speed;
+            }, intervalMs);
         }
 
-        function bindUploadUi(wrap) {
-            const progressBar = wrap.querySelector('.upload-progress-bar');
-            const progressFill = wrap.querySelector('.upload-progress-fill');
-            const statusEl = wrap.querySelector('.upload-status');
-            return {
-                start() { progressBar.style.display = 'inline-block'; statusEl.textContent = 'جاري الرفع...'; },
-                progress(pct) { progressFill.style.width = pct + '%'; statusEl.textContent = pct + '%'; },
-                error(msg) {
-                    progressBar.style.display = 'none';
-                    statusEl.textContent = 'فشل';
-                    alert('خطأ: ' + msg);
-                },
-                done() {
-                    statusEl.textContent = 'تم الرفع ✅';
-                    progressFill.style.width = '100%';
-                    setTimeout(() => { progressBar.style.display = 'none'; progressFill.style.width = '0%'; statusEl.textContent = ''; }, 2000);
-                }
-            };
-        }
-
-        function uploadFileToStorage(fileInput, folder) {
-            const file = fileInput.files[0];
-            if (!file) return;
-            const row = fileInput.closest('.item-row');
-            const ui = bindUploadUi(fileInput.closest('.upload-wrap'));
-            const urlInput = row.querySelector('.prod-img-input, .testi-img-input');
-            const preview = row.querySelector('.prod-preview, .testi-preview');
-
-            ui.start();
-            performUpload(file, folder, {
-                onProgress: pct => ui.progress(pct),
-                onError: err => ui.error(err.message),
-                onComplete: url => {
-                    urlInput.value = url;
-                    if (preview) { preview.src = url; preview.style.display = 'inline-block'; }
-                    ui.done();
-                }
-            });
-        }
-
-        function uploadSingleImage(fileInput, folder, targetInputId, previewId) {
-            const file = fileInput.files[0];
-            if (!file) return;
-            const ui = bindUploadUi(fileInput.closest('.upload-wrap'));
-            const urlInput = document.getElementById(targetInputId);
-            const preview = document.getElementById(previewId);
-            ui.start();
-            performUpload(file, folder, {
-                onProgress: pct => ui.progress(pct),
-                onError: err => ui.error(err.message),
-                onComplete: url => {
-                    urlInput.value = url;
-                    if (preview) { preview.src = url; preview.style.display = 'inline-block'; }
-                    ui.done();
-                }
-            });
-        }
-
-        function addFaqRow(q = '', a = '') {
-            const div = document.createElement('div'); div.className = 'item-row faq-item-row';
-            div.innerHTML = `
-                <input type="text" placeholder="السؤال" value="${escapeAttr(q)}" style="width:45%; margin-left:1%;">
-                <textarea placeholder="الإجابة" style="width:45%; margin-left:1%; height:40px; vertical-align:middle;">${escapeAttr(a)}</textarea>
-                <button onclick="removeRow(this)" style="background:red; padding:5px 10px;">حذف</button>`;
-            document.getElementById('faqs-list').appendChild(div);
-        }
-        function addEmptyFaq() { addFaqRow(); }
-
-        function removeRow(button) {
-            if (confirm('هل أنت متأكد من حذف هذا العنصر؟')) {
-                button.parentElement.remove();
-            }
-        }
-
-        function showStatus(elementId, message, ok) {
-            const el = document.getElementById(elementId);
-            el.textContent = message;
-            el.className = 'status-msg ' + (ok ? 'status-ok' : 'status-err');
-        }
-
-        function saveAllStoreData() {
-            const products = [];
-            document.querySelectorAll('.product-item').forEach(el => {
-                const inputs = el.querySelectorAll('input[type="text"]');
-                products.push({ name: inputs[0].value, price: inputs[1].value, img: inputs[2].value });
-            });
-
-            const testimonials = [];
-            document.querySelectorAll('.testi-item').forEach(el => {
-                const url = el.querySelector('.testi-img-input').value.trim();
-                if (url) testimonials.push({ img: url });
-            });
-
-            const faqs = [];
-            document.querySelectorAll('.faq-item-row').forEach(el => {
-                const q = el.querySelector('input').value;
-                const a = el.querySelector('textarea').value;
-                faqs.push({ q: q, a: a });
-            });
-
-            const finalData = {
-                brandName: document.getElementById('brandName').value,
-                imgbbApiKey: document.getElementById('imgbbApiKey').value,
-                logoUrl: document.getElementById('logoUrl').value,
-                heroBgUrl: document.getElementById('heroBgUrl').value,
-                offerBgUrl: document.getElementById('offerBgUrl').value,
-                heroTitle: document.getElementById('heroTitle').value,
-                heroDesc: document.getElementById('heroDesc').value,
-                offerTitle: document.getElementById('offerTitle').value,
-                offerDesc: document.getElementById('offerDesc').value,
-                whatsapp: document.getElementById('whatsapp').value,
-                facebook: document.getElementById('facebook').value,
-                instagram: document.getElementById('instagram').value,
-                whyPoints: document.getElementById('whyPoints').value,
-                products: products,
-                testimonials: testimonials,
-                faqs: faqs
-            };
-
-            showStatus('saveStatus', 'جاري الحفظ...', true);
-
-            db.ref('brandStoreData').set(finalData)
-                .then(() => showStatus('saveStatus', 'تم التحديث بنجاح! 🌟', true))
-                .catch(err => showStatus('saveStatus', 'خطأ في الحفظ: ' + err.message, false));
-        }
+        enableAutoSlider("products-container");
+        enableAutoSlider("testi-container");
     </script>
-</body>
-        </html>
-    <div class="box">
-        <h3>٤. قسم الأسئلة الشائعة</h3>
-        <div id="faqs-list"></div>
-        <button onclick="addEmptyFaq()">+ إضافة سؤال جديد</button>
-    </div>
 
-    <div class="box">
-        <h3>٥. تنبيهات بوت تيليجرام</h3>
-        <p class="hint" style="margin-bottom:15px;">عند تفعيل هذا القسم، هيوصلك إشعار على تيليجرام في كل مرة تحفظ فيها تحديثات المتجر. أنشئ بوت من <strong>BotFather@</strong> على تيليجرام، وهيديك التوكن. لمعرفة الـ Chat ID ابعت أي رسالة للبوت بتاعك، وافتح الرابط: https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates وهتلاقي الرقم جوه "chat":{"id": ...}</p>
-        <div class="group"><label>توكن البوت (Bot Token)</label><input type="text" id="tgBotToken" placeholder="مثال: 123456789:ABCDefGhIJKlmNoPQRstuVWXyz"></div>
-        <div class="group"><label>معرّف المحادثة (Chat ID)</label><input type="text" id="tgChatId" placeholder="مثال: 123456789"></div>
-        <button onclick="sendTelegramTest()" style="background:#229ED9;">إرسال رسالة تجريبية للتأكد من الإعداد</button>
-        <span id="tgTestStatus" class="status-msg"></span>
-    </div>
-
-    <div class="box">
-        <button onclick="saveAllStoreData()" style="width:100%; background:#25D366; font-size:18px; padding:15px;">حفظ وتحديث المتجر بالكامل الآن سحابياً 🚀</button>
-        <div id="saveStatus" class="status-msg"></div>
-    </div>
-
+    <!-- ============================================================
+         سكريبت مستقل لحركات "أقسام المتجر" (Vanilla JS فقط، بدون مكتبات)
+         - IntersectionObserver: ظهور تدريجي متتابع (Fade In + TranslateY)
+         - الضغط: تصغير البطاقة + تأثير Ripple خفيف
+         - المرور بالماوس (Desktop فقط): يتم عبر CSS بـ hover/pointer:fine
+       ============================================================ -->
     <script>
-        // تم ربط مفاتيح Firebase بنجاح
-        const firebaseConfig = {
-            apiKey: "AIzaSyC8gv5mxQ2JaMDkQeWTpnit1CHgMh_8zL0",
-            authDomain: "tricycle-for-clothes.firebaseapp.com",
-            databaseURL: "https://tricycle-for-clothes-default-rtdb.firebaseio.com",
-            projectId: "tricycle-for-clothes",
-            storageBucket: "tricycle-for-clothes.firebasestorage.app",
-            messagingSenderId: "599861767922",
-            appId: "1:599861767922:web:04c16f7efc385680842a6b"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        (function initCategoriesShowcase() {
+            const cards = document.querySelectorAll('#categories-showcase .cat-card');
+            if (!cards.length) return;
 
-        // حماية القيم من كسر الـ HTML عند إدراجها في attributes (مثلاً لو المنتج فيه علامة اقتباس)
-        function escapeAttr(str) {
-            if (str === undefined || str === null) return "";
-            return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        // جلب البيانات عند فتح الصفحة
-        db.ref('brandStoreData').once('value').then(snapshot => {
-            const data = snapshot.val();
-            if (!data) return;
-
-            document.getElementById('brandName').value = data.brandName || '';
-            document.getElementById('imgbbApiKey').value = data.imgbbApiKey || '';
-            document.getElementById('logoUrl').value = data.logoUrl || '';
-            document.getElementById('heroBgUrl').value = data.heroBgUrl || '';
-            document.getElementById('offerBgUrl').value = data.offerBgUrl || '';
-            updatePreview(document.getElementById('logoUrl'), '#logoPreview');
-            updatePreview(document.getElementById('heroBgUrl'), '#heroBgPreview');
-            updatePreview(document.getElementById('offerBgUrl'), '#offerBgPreview');
-            document.getElementById('heroTitle').value = data.heroTitle || '';
-            document.getElementById('heroDesc').value = data.heroDesc || '';
-            document.getElementById('offerTitle').value = data.offerTitle || '';
-            document.getElementById('offerDesc').value = data.offerDesc || '';
-            document.getElementById('whatsapp').value = data.whatsapp || '';
-            document.getElementById('facebook').value = data.facebook || '';
-            document.getElementById('instagram').value = data.instagram || '';
-            document.getElementById('whyPoints').value = data.whyPoints || '';
-            document.getElementById('tgBotToken').value = data.tgBotToken || '';
-            document.getElementById('tgChatId').value = data.tgChatId || '';
-
-            if (data.products) data.products.forEach(p => addProductRow(p.name, p.price, p.img));
-            if (data.testimonials) data.testimonials.forEach(t => addTestiRow(typeof t === 'string' ? t : (t.img || '')));
-            if (data.faqs) data.faqs.forEach(f => addFaqRow(f.q, f.a));
-        }).catch(err => {
-            console.error(err);
-            showStatus('saveStatus', 'تعذر تحميل البيانات الحالية: ' + err.message, false);
-        });
-
-        function addProductRow(name = '', price = '', img = '') {
-            const div = document.createElement('div'); div.className = 'item-row product-item';
-            div.innerHTML = `
-                <input type="text" placeholder="اسم المنتج" value="${escapeAttr(name)}" style="width:22%; margin-left:1%;">
-                <input type="text" placeholder="السعر" value="${escapeAttr(price)}" style="width:15%; margin-left:1%;">
-                <input type="text" class="prod-img-input" placeholder="رابط صورة المنتج المباشر" value="${escapeAttr(img)}" style="width:30%; margin-left:1%;" oninput="updatePreview(this, '.prod-preview')">
-                <span class="upload-wrap">
-                    <input type="file" accept="image/*" class="upload-file-input" style="display:none;" onchange="uploadFileToStorage(this, 'products')">
-                    <button type="button" class="upload-btn" onclick="this.parentElement.querySelector('.upload-file-input').click()">رفع صورة</button>
-                    <span class="upload-progress-bar"><span class="upload-progress-fill"></span></span>
-                    <span class="upload-status"></span>
-                </span>
-                <img class="prod-preview" src="${escapeAttr(img)}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; vertical-align:middle; margin-left:1%; ${img ? '' : 'display:none;'}" onerror="this.style.display='none';">
-                <button onclick="removeRow(this)" style="background:red; padding:5px 10px;">حذف</button>`;
-            document.getElementById('products-list').appendChild(div);
-        }
-        function addEmptyProduct() { addProductRow(); }
-
-        function addTestiRow(img = '') {
-            const div = document.createElement('div'); div.className = 'item-row testi-item';
-            div.innerHTML = `
-                <input type="text" class="testi-img-input" placeholder="رابط صورة (سكرين شوت رأي العميل من الواتساب)" value="${escapeAttr(img)}" style="width:50%; margin-left:1%;" oninput="updatePreview(this, '.testi-preview')">
-                <span class="upload-wrap">
-                    <input type="file" accept="image/*" class="upload-file-input" style="display:none;" onchange="uploadFileToStorage(this, 'testimonials')">
-                    <button type="button" class="upload-btn" onclick="this.parentElement.querySelector('.upload-file-input').click()">رفع صورة</button>
-                    <span class="upload-progress-bar"><span class="upload-progress-fill"></span></span>
-                    <span class="upload-status"></span>
-                </span>
-                <img class="testi-preview" src="${escapeAttr(img)}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; vertical-align:middle; margin-left:1%; ${img ? '' : 'display:none;'}" onerror="this.style.display='none';">
-                <button onclick="removeRow(this)" style="background:red; padding:5px 10px;">حذف</button>`;
-            document.getElementById('testi-list').appendChild(div);
-        }
-        function addEmptyTesti() { addTestiRow(''); }
-
-        // تحديث المعاينة المصغّرة لأي حقل صورة أثناء الكتابة اليدوية للرابط
-        function updatePreview(input, previewSelector) {
-            const preview = input.parentElement.querySelector(previewSelector);
-            if (!preview) return;
-            if (input.value.trim()) {
-                preview.src = input.value.trim();
-                preview.style.display = 'inline-block';
-            } else {
-                preview.style.display = 'none';
-            }
-        }
-
-        // منطق الرفع المشترك لأي ملف، عبر ImgBB (خدمة مجانية بالكامل)
-        function performUpload(file, folder, { onProgress, onError, onComplete }) {
-            const apiKey = document.getElementById('imgbbApiKey').value.trim();
-            if (!apiKey) {
-                onError({ message: 'من فضلك أدخل مفتاح ImgBB API الأول (أعلى اللوحة) واحفظ، بعدها جرّب الرفع تاني.' });
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('image', file);
-
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', `https://api.imgbb.com/1/upload?key=${encodeURIComponent(apiKey)}`);
-
-            xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable) {
-                    onProgress(Math.round((e.loaded / e.total) * 100));
-                }
-            });
-
-            xhr.onload = () => {
-                let res;
-                try {
-                    res = JSON.parse(xhr.responseText);
-                } catch (e) {
-                    onError({ message: 'استجابة غير متوقعة من خدمة الرفع.' });
-                    return;
-                }
-                if (xhr.status >= 200 && xhr.status < 300 && res.success) {
-                    onComplete(res.data.url);
-                } else {
-                    onError({ message: (res.error && res.error.message) || 'فشل الرفع، تأكد من صحة مفتاح ImgBB API.' });
-                }
-            };
-
-            xhr.onerror = () => onError({ message: 'تعذر الاتصال بخدمة رفع الصور، تأكد من الإنترنت وحاول تاني.' });
-
-            xhr.send(formData);
-        }
-
-        // ربط عناصر شريط التقدم والحالة بأي زر رفع
-        function bindUploadUi(wrap) {
-            const progressBar = wrap.querySelector('.upload-progress-bar');
-            const progressFill = wrap.querySelector('.upload-progress-fill');
-            const statusEl = wrap.querySelector('.upload-status');
-            return {
-                start() { progressBar.style.display = 'inline-block'; statusEl.textContent = 'جاري الرفع...'; },
-                progress(pct) { progressFill.style.width = pct + '%'; statusEl.textContent = pct + '%'; },
-                error(msg) {
-                    progressBar.style.display = 'none';
-                    statusEl.textContent = 'فشل الرفع';
-                    alert('حدث خطأ أثناء رفع الصورة: ' + msg);
-                },
-                done() {
-                    statusEl.textContent = 'تم الرفع ✅';
-                    progressFill.style.width = '100%';
-                    setTimeout(() => {
-                        progressBar.style.display = 'none';
-                        progressFill.style.width = '0%';
-                        statusEl.textContent = '';
-                    }, 2500);
-                }
-            };
-        }
-
-        // رفع صورة داخل صف متكرر (منتج أو رأي عميل) وتحديث حقل الرابط + المعاينة الخاصة بنفس الصف
-        function uploadFileToStorage(fileInput, folder) {
-            const file = fileInput.files[0];
-            if (!file) return;
-
-            const row = fileInput.closest('.item-row');
-            const ui = bindUploadUi(fileInput.closest('.upload-wrap'));
-            const urlInput = row.querySelector('.prod-img-input, .testi-img-input');
-            const preview = row.querySelector('.prod-preview, .testi-preview');
-
-            ui.start();
-            performUpload(file, folder, {
-                onProgress: (pct) => ui.progress(pct),
-                onError: (err) => ui.error(err.message),
-                onComplete: (url) => {
-                    urlInput.value = url;
-                    if (preview) { preview.src = url; preview.style.display = 'inline-block'; }
-                    ui.done();
-                }
-            });
-        }
-
-        // رفع صورة لحقل مستقل (زي الشعار أو خلفية الواجهة الرئيسية) بمعرّفات ثابتة
-        function uploadSingleImage(fileInput, folder, targetInputId, previewId) {
-            const file = fileInput.files[0];
-            if (!file) return;
-
-            const ui = bindUploadUi(fileInput.closest('.upload-wrap'));
-            const urlInput = document.getElementById(targetInputId);
-            const preview = document.getElementById(previewId);
-
-            ui.start();
-            performUpload(file, folder, {
-                onProgress: (pct) => ui.progress(pct),
-                onError: (err) => ui.error(err.message),
-                onComplete: (url) => {
-                    urlInput.value = url;
-                    if (preview) { preview.src = url; preview.style.display = 'inline-block'; }
-                    ui.done();
-                }
-            });
-        }
-
-
-        function addFaqRow(q = '', a = '') {
-            const div = document.createElement('div'); div.className = 'item-row faq-item-row';
-            div.innerHTML = `
-                <input type="text" placeholder="السؤال" value="${escapeAttr(q)}" style="width:45%; margin-left:1%;">
-                <textarea placeholder="الإجابة" style="width:45%; margin-left:1%; height:40px; vertical-align:middle;">${escapeAttr(a)}</textarea>
-                <button onclick="removeRow(this)" style="background:red; padding:5px 10px;">حذف</button>`;
-            document.getElementById('faqs-list').appendChild(div);
-        }
-        function addEmptyFaq() { addFaqRow(); }
-
-        // حذف صف مع تأكيد لتفادي المسح بالخطأ
-        function removeRow(button) {
-            if (confirm('هل أنت متأكد من حذف هذا العنصر؟')) {
-                button.parentElement.remove();
-            }
-        }
-
-        function showStatus(elementId, message, ok) {
-            const el = document.getElementById(elementId);
-            el.textContent = message;
-            el.className = 'status-msg ' + (ok ? 'status-ok' : 'status-err');
-        }
-
-        // إرسال إشعار عبر بوت تيليجرام
-        async function sendTelegramMessage(token, chatId, text) {
-            if (!token || !chatId) return { ok: false, error: 'التوكن أو الـ Chat ID غير مُدخلين' };
-            try {
-                const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' })
+            // 1) ظهور تدريجي متتابع عند دخول القسم في الشاشة
+            const revealObserver = new IntersectionObserver((entries, obs) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    const card = entry.target;
+                    const index = Array.from(cards).indexOf(card);
+                    card.style.transitionDelay = `${index * 80}ms`;
+                    card.classList.add('is-visible');
+                    obs.unobserve(card);
                 });
-                const data = await res.json();
-                if (!data.ok) return { ok: false, error: data.description || 'خطأ غير معروف من تيليجرام' };
-                return { ok: true };
-            } catch (err) {
-                return { ok: false, error: err.message };
+            }, { threshold: 0.15 });
+
+            cards.forEach((card) => revealObserver.observe(card));
+
+            // 2) تأثير الضغط (تصغير 96%) + Ripple خفيف، يعمل على اللمس والماوس معاً
+            cards.forEach((card) => {
+                card.addEventListener('pointerdown', (e) => {
+                    card.classList.add('is-pressed');
+                    spawnRipple(card, e);
+                });
+                ['pointerup', 'pointerleave', 'pointercancel'].forEach((evt) => {
+                    card.addEventListener(evt, () => card.classList.remove('is-pressed'));
+                });
+            });
+
+            function spawnRipple(card, e) {
+                const rect = card.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const originX = (e.clientX ?? rect.left + rect.width / 2) - rect.left - size / 2;
+                const originY = (e.clientY ?? rect.top + rect.height / 2) - rect.top - size / 2;
+
+                const ripple = document.createElement('span');
+                ripple.className = 'cat-ripple';
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${originX}px`;
+                ripple.style.top = `${originY}px`;
+
+                card.appendChild(ripple);
+                ripple.addEventListener('animationend', () => ripple.remove());
             }
-        }
-
-        function sendTelegramTest() {
-            const token = document.getElementById('tgBotToken').value.trim();
-            const chatId = document.getElementById('tgChatId').value.trim();
-            showStatus('tgTestStatus', 'جاري الإرسال...', true);
-            sendTelegramMessage(token, chatId, '✅ رسالة تجريبية: تم ربط بوت تيليجرام بلوحة التحكم بنجاح.')
-                .then(result => {
-                    if (result.ok) {
-                        showStatus('tgTestStatus', 'تم الإرسال بنجاح، تفقد محادثة البوت.', true);
-                    } else {
-                        showStatus('tgTestStatus', 'فشل الإرسال: ' + result.error, false);
-                    }
-                });
-        }
-
-        function saveAllStoreData() {
-            const products = [];
-            document.querySelectorAll('.product-item').forEach(el => {
-                const inputs = el.querySelectorAll('input[type="text"]');
-                products.push({ name: inputs[0].value, price: inputs[1].value, img: inputs[2].value });
-            });
-
-            const testimonials = [];
-            document.querySelectorAll('.testi-item').forEach(el => {
-                const url = el.querySelector('.testi-img-input').value.trim();
-                if (url) testimonials.push({ img: url });
-            });
-
-            const faqs = [];
-            document.querySelectorAll('.faq-item-row').forEach(el => {
-                const q = el.querySelector('input').value;
-                const a = el.querySelector('textarea').value;
-                faqs.push({ q: q, a: a });
-            });
-
-            const tgBotToken = document.getElementById('tgBotToken').value.trim();
-            const tgChatId = document.getElementById('tgChatId').value.trim();
-
-            const finalData = {
-                brandName: document.getElementById('brandName').value,
-                imgbbApiKey: document.getElementById('imgbbApiKey').value,
-                logoUrl: document.getElementById('logoUrl').value,
-                heroBgUrl: document.getElementById('heroBgUrl').value,
-                offerBgUrl: document.getElementById('offerBgUrl').value,
-                heroTitle: document.getElementById('heroTitle').value,
-                heroDesc: document.getElementById('heroDesc').value,
-                offerTitle: document.getElementById('offerTitle').value,
-                offerDesc: document.getElementById('offerDesc').value,
-                whatsapp: document.getElementById('whatsapp').value,
-                facebook: document.getElementById('facebook').value,
-                instagram: document.getElementById('instagram').value,
-                whyPoints: document.getElementById('whyPoints').value,
-                tgBotToken: tgBotToken,
-                tgChatId: tgChatId,
-                products: products,
-                testimonials: testimonials,
-                faqs: faqs
-            };
-
-            showStatus('saveStatus', 'جاري الحفظ...', true);
-
-            db.ref('brandStoreData').set(finalData)
-                .then(() => {
-                    showStatus('saveStatus', 'تم التحديث وحفظ كافة البيانات على السيرفر السحابي بنجاح! 🌟', true);
-
-                    // إرسال إشعار تيليجرام بتفاصيل التحديث (اختياري، فقط لو البيانات مُدخلة)
-                    if (tgBotToken && tgChatId) {
-                        const now = new Date().toLocaleString('ar-EG');
-                        const summary =
-                            `🔔 <b>تم تحديث المتجر</b>\n` +
-                            `🏷️ البراند: ${finalData.brandName || '—'}\n` +
-                            `🛍️ عدد المنتجات: ${products.length}\n` +
-                            `⭐ عدد الآراء: ${testimonials.length}\n` +
-                            `❓ عدد الأسئلة الشائعة: ${faqs.length}\n` +
-                            `🕒 الوقت: ${now}`;
-                        sendTelegramMessage(tgBotToken, tgChatId, summary);
-                    }
-                })
-                .catch(err => {
-                    showStatus('saveStatus', 'خطأ في الحفظ: ' + err.message, false);
-                });
-        }
-    </script>
-</body>
-</html>
-                .catch(err => {
-                    showStatus('saveStatus', 'خطأ في الحفظ: ' + err.message, false);
-                });
-        }
+        })();
     </script>
 </body>
 </html>

@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم الفاخرة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
     <style>
         body { font-family: 'Cairo', sans-serif; background: #f4f6f9; padding: 20px; text-align: right; }
         .box { max-width: 800px; background: white; margin: 20px auto; padding: 25px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
@@ -34,6 +33,14 @@
 
     <div class="box">
         <h2>لوحة إدارة محتوى المتجر</h2>
+        <h3 style="border-bottom:none; margin-bottom:10px;">إعدادات رفع الصور (مجانية بالكامل عبر ImgBB)</h3>
+        <p class="hint" style="background:#fff8ec; border:1px solid #f0dfb8; padding:10px; border-radius:4px; margin-bottom:15px;">
+            بدل Firebase Storage اللي بقى محتاج خطة مدفوعة (Blaze)، استخدمنا <strong>ImgBB</strong> لرفع الصور، وهي خدمة مجانية 100% من غير أي بطاقة ائتمان:<br>
+            ١) روح <strong>api.imgbb.com</strong> وسجّل حساب مجاني.<br>
+            ٢) من نفس الصفحة اضغط "Get API Key" وانسخه.<br>
+            ٣) الصقه في الحقل تحت واحفظ — بعدها زرار "رفع صورة" هيشتغل في كل الأقسام.
+        </p>
+        <div class="group"><label>مفتاح ImgBB API</label><input type="text" id="imgbbApiKey" placeholder="مثال: 3a1f9c2b8e7d4a5f6c1b0e9d8a7c6b5f"></div>
         <h3>١. النصوص العامة والعروض وقنوات التواصل</h3>
         <div class="group"><label>اسم البراند</label><input type="text" id="brandName"></div>
 
@@ -65,6 +72,19 @@
         <div class="group"><label>وصف الواجهة الرئيسية</label><textarea id="heroDesc"></textarea></div>
         <div class="group"><label>عنوان بانر العروض</label><input type="text" id="offerTitle"></div>
         <div class="group"><label>تفاصيل العرض الحالي</label><textarea id="offerDesc"></textarea></div>
+
+        <div class="group">
+            <label>صورة خلفية بانر العروض</label>
+            <input type="text" id="offerBgUrl" placeholder="رابط صورة الخلفية المباشر" oninput="updatePreview(this, '#offerBgPreview')">
+            <span class="upload-wrap">
+                <input type="file" accept="image/*" class="upload-file-input" style="display:none;" onchange="uploadSingleImage(this, 'branding', 'offerBgUrl', 'offerBgPreview')">
+                <button type="button" class="upload-btn" onclick="this.parentElement.querySelector('.upload-file-input').click()">رفع صورة</button>
+                <span class="upload-progress-bar"><span class="upload-progress-fill"></span></span>
+                <span class="upload-status"></span>
+            </span>
+            <img id="offerBgPreview" src="" style="width:90px; height:50px; object-fit:cover; border-radius:4px; vertical-align:middle; margin-top:8px; display:none;" onerror="this.style.display='none';">
+        </div>
+
         <div class="group"><label>رقم الواتساب (بالصيغة الدولية وبدون أصفار أو علامة +)</label><input type="text" id="whatsapp"></div>
         <div class="group"><label>رابط فيسبوك</label><input type="text" id="facebook"></div>
         <div class="group"><label>رابط إنستجرام</label><input type="text" id="instagram"></div>
@@ -118,7 +138,6 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const storage = firebase.storage();
 
         // حماية القيم من كسر الـ HTML عند إدراجها في attributes (مثلاً لو المنتج فيه علامة اقتباس)
         function escapeAttr(str) {
@@ -137,10 +156,13 @@
             if (!data) return;
 
             document.getElementById('brandName').value = data.brandName || '';
+            document.getElementById('imgbbApiKey').value = data.imgbbApiKey || '';
             document.getElementById('logoUrl').value = data.logoUrl || '';
             document.getElementById('heroBgUrl').value = data.heroBgUrl || '';
+            document.getElementById('offerBgUrl').value = data.offerBgUrl || '';
             updatePreview(document.getElementById('logoUrl'), '#logoPreview');
             updatePreview(document.getElementById('heroBgUrl'), '#heroBgPreview');
+            updatePreview(document.getElementById('offerBgUrl'), '#offerBgPreview');
             document.getElementById('heroTitle').value = data.heroTitle || '';
             document.getElementById('heroDesc').value = data.heroDesc || '';
             document.getElementById('offerTitle').value = data.offerTitle || '';
@@ -206,17 +228,44 @@
             }
         }
 
-        // منطق الرفع المشترك لأي ملف إلى Firebase Storage
+        // منطق الرفع المشترك لأي ملف، عبر ImgBB (خدمة مجانية بالكامل)
         function performUpload(file, folder, { onProgress, onError, onComplete }) {
-            const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-            const path = `${folder}/${Date.now()}_${safeName}`;
-            const uploadTask = storage.ref(path).put(file);
+            const apiKey = document.getElementById('imgbbApiKey').value.trim();
+            if (!apiKey) {
+                onError({ message: 'من فضلك أدخل مفتاح ImgBB API الأول (أعلى اللوحة) واحفظ، بعدها جرّب الرفع تاني.' });
+                return;
+            }
 
-            uploadTask.on('state_changed',
-                (snapshot) => onProgress(Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)),
-                (error) => onError(error),
-                () => uploadTask.snapshot.ref.getDownloadURL().then(onComplete)
-            );
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `https://api.imgbb.com/1/upload?key=${encodeURIComponent(apiKey)}`);
+
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    onProgress(Math.round((e.loaded / e.total) * 100));
+                }
+            });
+
+            xhr.onload = () => {
+                let res;
+                try {
+                    res = JSON.parse(xhr.responseText);
+                } catch (e) {
+                    onError({ message: 'استجابة غير متوقعة من خدمة الرفع.' });
+                    return;
+                }
+                if (xhr.status >= 200 && xhr.status < 300 && res.success) {
+                    onComplete(res.data.url);
+                } else {
+                    onError({ message: (res.error && res.error.message) || 'فشل الرفع، تأكد من صحة مفتاح ImgBB API.' });
+                }
+            };
+
+            xhr.onerror = () => onError({ message: 'تعذر الاتصال بخدمة رفع الصور، تأكد من الإنترنت وحاول تاني.' });
+
+            xhr.send(formData);
         }
 
         // ربط عناصر شريط التقدم والحالة بأي زر رفع
@@ -367,8 +416,10 @@
 
             const finalData = {
                 brandName: document.getElementById('brandName').value,
+                imgbbApiKey: document.getElementById('imgbbApiKey').value,
                 logoUrl: document.getElementById('logoUrl').value,
                 heroBgUrl: document.getElementById('heroBgUrl').value,
+                offerBgUrl: document.getElementById('offerBgUrl').value,
                 heroTitle: document.getElementById('heroTitle').value,
                 heroDesc: document.getElementById('heroDesc').value,
                 offerTitle: document.getElementById('offerTitle').value,
@@ -410,3 +461,4 @@
     </script>
 </body>
 </html>
+

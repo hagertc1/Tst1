@@ -62,7 +62,6 @@
             color: var(--white); 
             padding: 0 20px; 
         }
-        /* حاوية الخلفية المتحركة Panning Animation */
         .hero-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -99,7 +98,7 @@
         }
 
         /* Global Sections */
-        section { padding: 70px 5%; text-align: center; }
+        section { padding: 70px 5%; text-align: center; overflow: hidden; }
         .sec-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
         .sec-title::after { content: ''; display: block; width: 40px; height: 3px; background: var(--accent); margin: 8px auto 0; }
         .sec-desc { color: var(--text-light); margin-bottom: 40px; font-size: 15px; }
@@ -158,40 +157,61 @@
             .categories-showcase { grid-template-columns: repeat(6, 1fr); gap: 20px; }
         }
 
-        /* 4. Products (horizontal scroll carousel) */
-        .products-grid {
+        /* 4. الحاوية الأساسية الفاخرة للسلايدر اللا نهائي المنتظم */
+        .slider-wrapper {
+            position: relative;
+            width: 100%;
+            padding: 20px 0;
+            overflow: hidden;
             display: flex;
-            overflow-x: auto;
-            gap: 20px;
-            padding: 10px 5px;
-            scroll-behavior: smooth;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
         }
-        .products-grid::-webkit-scrollbar { display: none; }
+        /* إخفاء شريط التمرير الأصلي والاعتماد الكامل على الأنيميشن السلس */
+        .products-grid, .testi-grid {
+            display: flex;
+            gap: 24px;
+            width: max-content;
+            will-change: transform;
+            cursor: grab;
+            user-select: none;
+            padding: 10px;
+        }
+        .products-grid:active, .testi-grid:active { cursor: grabbing; }
 
-        .prod-card {
+        /* كروت المنتجات والآراء المحدثة بالتأثير المرن */
+        .prod-card, .testi-card {
             min-width: 270px;
             max-width: 270px;
-            flex: 0 0 auto;
-            scroll-snap-align: start;
             background: #fff;
             border: 1px solid #eee;
-            border-radius: 10px;
+            border-radius: 14px;
             overflow: hidden;
-            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             text-align: right;
             display: flex;
             flex-direction: column;
+            backface-visibility: hidden;
+            transform: scale(0.98);
+            opacity: 0.95;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, opacity 0.4s ease;
         }
-        .prod-card:hover { transform: translateY(-6px); box-shadow: 0 10px 25px rgba(0,0,0,0.12); }
+        
+        /* تأثير مميز حركي مرن جداً عند مرور الماوس */
+        .prod-card:hover, .testi-card:hover { 
+            transform: scale(1.03) translateY(-4px); 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1); 
+            opacity: 1;
+            z-index: 10;
+        }
 
-        .prod-img-wrapper { width: 100%; aspect-ratio: 1/1; position: relative; background: #fafafa; }
-        .prod-img { width: 100%; height: 100%; object-fit: cover; }
-        .prod-info { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .prod-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .prod-price { color: var(--accent); font-weight: 700; font-size: 17px; margin-bottom: 12px; }
+        .prod-img-wrapper { width: 100%; aspect-ratio: 1/1; position: relative; background: #fafafa; overflow: hidden;}
+        .prod-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .prod-card:hover .prod-img { transform: scale(1.06); }
+        .prod-info { padding: 18px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .prod-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--text-dark); }
+        .prod-price { color: var(--accent); font-weight: 700; font-size: 18px; }
+
+        .testi-card { min-width: 250px; max-width: 250px; border-radius: 14px; }
+        .testi-img { width: 100%; height: auto; display: block; pointer-events: none; }
 
         /* 5. Why Us */
         .why-us { background: var(--bg-light); }
@@ -199,27 +219,7 @@
         .why-point { margin-bottom: 15px; display: flex; gap: 10px; align-items: flex-start; }
         .why-point i { color: var(--accent); margin-top: 5px; }
 
-        /* 6. Testimonials */
-        .testi-grid {
-            display: flex;
-            overflow-x: auto;
-            gap: 20px;
-            padding: 10px 5px;
-            scroll-behavior: smooth;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        .testi-grid::-webkit-scrollbar { display: none; }
-        .testi-card { min-width: 240px; max-width: 240px; flex: 0 0 auto; scroll-snap-align: start; border-radius: 10px; overflow: hidden; border: 1px solid #eee; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: var(--transition); cursor: pointer; }
-        .testi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 22px rgba(0,0,0,0.12); }
-        .testi-img { width: 100%; height: auto; display: block; }
-
-        @media (max-width: 768px) {
-            .testi-card { min-width: 190px; max-width: 190px; }
-        }
-
-        /* 7. FAQs */
+        /* 6. FAQs */
         .faqs { background: var(--bg-light); }
         .faq-container { max-width: 750px; margin: 0 auto; text-align: right; }
         .faq-item { background: white; margin-bottom: 10px; border-radius: 4px; overflow: hidden; border: 1px solid #eee; }
@@ -233,7 +233,6 @@
         .footer-socials a { color: white; margin-right: 15px; font-size: 18px; transition: var(--transition); }
         .footer-socials a:hover { color: var(--accent); }
         
-        /* قسم مخصص للمبرمج بشكل بارز وجذاب */
         .dev-badge {
             display: inline-flex;
             align-items: center;
@@ -275,9 +274,9 @@
         /* Responsive */
         @media (max-width: 768px) {
             .floating-wa { width: 46px; height: 46px; font-size: 20px; left: 12px; bottom: 12px; }
-            .products-grid { gap: 12px; }
-            .prod-card { min-width: 180px; max-width: 180px; }
-            .prod-img-wrapper { aspect-ratio: 1/1; }
+            .products-grid, .testi-grid { gap: 14px; }
+            .prod-card { min-width: 190px; max-width: 190px; border-radius: 10px; }
+            .testi-card { min-width: 170px; max-width: 170px; border-radius: 10px; }
             .prod-title { font-size: 13px; }
             .prod-price { font-size: 15px; }
             .nav-links { display: none; }
@@ -356,8 +355,10 @@
     <section id="products">
         <h2 class="sec-title">أفضل المنتجات المتاحة</h2>
         <p class="sec-desc">القطع الأكثر طلباً وتميزاً في مجموعتنا</p>
-        <div class="products-grid" id="products-container">
-            <div class="col-span-full text-center py-12 text-gray-400">جاري تحميل المعروضات لايف...</div>
+        <div class="slider-wrapper">
+            <div class="products-grid" id="products-container">
+                <div style="width:100vw; text-center" class="text-gray-400">جاري تحميل المعروضات لايف...</div>
+            </div>
         </div>
     </section>
 
@@ -370,8 +371,10 @@
     <section id="testimonials">
         <h2 class="sec-title">ماذا يقول عملاؤنا؟</h2>
         <p class="sec-desc">شهادات وتجارب حقيقية نفخر بها</p>
-        <div class="testi-grid" id="testi-container">
-            <div class="col-span-full text-center py-4 text-gray-400">جاري جلب الآراء...</div>
+        <div class="slider-wrapper">
+            <div class="testi-grid" id="testi-container">
+                <div style="width:100vw; text-center" class="text-gray-400">جاري جلب الآراء...</div>
+            </div>
         </div>
     </section>
 
@@ -386,9 +389,8 @@
     <footer>
         <div class="footer-right">
             <p>&copy; ٢٠٢٦ جميع الحقوق محفوظة لـ <span id="footer-brand">متجر الملابس والأزياء</span></p>
-            <!-- مساحة إبراز مخصصة للمبرمج ودعمه الفني عبر الواتساب -->
             <p style="margin-top: 8px;">
-                <a href="https://api.whatsapp.com/send?phone=201094344286" class="dev-badge" target="_blank" title="تواصل مع مبرمج الموقع">
+                <a href="https://api.whatsapp.com/send?phone=201068424130" class="dev-badge" target="_blank" title="تواصل مع مبرمج الموقع">
                     <i class="fab fa-whatsapp"></i> الدعم الفني وتطوير بواسطة المبرمج
                 </a>
             </p>
@@ -469,39 +471,42 @@
                 whyContainer.innerHTML = '<p class="text-center text-gray-400">سيتم إضافة نقاط القوة قريباً.</p>';
             }
 
+            // 1) تحديث المنتجات + تهيئة كروت مكررة لضمان التدفق المرن اللانهائي
             const productsContainer = document.getElementById('products-container');
             if (data.products && data.products.length > 0) {
-                productsContainer.innerHTML = data.products.map(p => {
-                    return `
-                        <div class="prod-card">
-                            <div class="prod-img-wrapper">
-                                <img class="prod-img" src="${escapeHtml(p.img) || 'https://via.placeholder.com/300?text=No+Image'}" alt="${escapeHtml(p.name)}" loading="lazy">
-                            </div>
-                            <div class="prod-info">
-                                <div>
-                                    <h3 class="prod-title">${escapeHtml(p.name)}</h3>
-                                </div>
-                                <div>
-                                    <p class="prod-price">${escapeHtml(p.price)}</p>
-                                </div>
-                            </div>
-                        </div>`;
-                }).join('');
+                const rawHtml = data.products.map(p => `
+                    <div class="prod-card">
+                        <div class="prod-img-wrapper">
+                            <img class="prod-img" src="${escapeHtml(p.img) || 'https://via.placeholder.com/300?text=No+Image'}" alt="${escapeHtml(p.name)}" loading="lazy">
+                        </div>
+                        <div class="prod-info">
+                            <h3 class="prod-title">${escapeHtml(p.name)}</h3>
+                            <p class="prod-price">${escapeHtml(p.price)}</p>
+                        </div>
+                    </div>`).join('');
+                
+                // مضاعفة الكروت ثلاث مرات لملء الشاشة بشكل لا نهائي ومرن جداً
+                productsContainer.innerHTML = rawHtml + rawHtml + rawHtml;
+                initializeMarqueeSlider("products-container", 0.8);
             } else {
-                productsContainer.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">لا توجد منتجات حالياً، أضف بعض المنتجات من لوحة التحكم!</div>';
+                productsContainer.innerHTML = '<div class="text-center py-12 text-gray-400">لا توجد منتجات حالياً.</div>';
             }
 
+            // 2) تحديث الآراء + تهيئة التكرار الذكي
             const testiContainer = document.getElementById('testi-container');
             if (data.testimonials && data.testimonials.length > 0) {
-                testiContainer.innerHTML = data.testimonials.map(t => {
+                const rawTestiHtml = data.testimonials.map(t => {
                     const imgUrl = escapeHtml(t.img || t);
                     return `
                         <div class="testi-card" onclick="window.open('${imgUrl}', '_blank')">
                             <img class="testi-img" src="${imgUrl}" alt="رأي عميل حقيقي" loading="lazy">
                         </div>`;
                 }).join('');
+                
+                testiContainer.innerHTML = rawTestiHtml + rawTestiHtml + rawTestiHtml;
+                initializeMarqueeSlider("testi-container", 0.6);
             } else {
-                testiContainer.innerHTML = '<div class="col-span-full text-center py-4 text-gray-400">سيتم نشر تقييمات العملاء قريباً.</div>';
+                testiContainer.innerHTML = '<div class="text-center py-4 text-gray-400">سيتم نشر تقييمات العملاء قريباً.</div>';
             }
 
             const faqsContainer = document.getElementById('faqs-container');
@@ -526,33 +531,45 @@
             }
         }
 
-        // سريان السلايدر التلقائي السلس والأمثل
-        function enableAutoSlider(elementId, speed = 1, intervalMs = 30) {
-            const slider = document.getElementById(elementId);
-            if (!slider) return;
+        /**
+         * محرك أنيميشن السلايدر اللانهائي فائق المرونة والسلاسة (Infinite Marquee)
+         * يعتمد على الـ RequestAnimationFrame لضمان استقرار الحركة بـ 60 إطار بالثانية
+         */
+        function initializeMarqueeSlider(containerId, speedFactor = 0.8) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
 
-            let direction = 1;
-            let paused = false;
+            let currentTranslate = 0;
+            let isPaused = false;
 
-            slider.addEventListener('mouseenter', () => paused = true);
-            slider.addEventListener('mouseleave', () => paused = false);
-            slider.addEventListener('touchstart', () => paused = true, { passive: true });
-            slider.addEventListener('touchend', () => paused = false, { passive: true });
+            // حساب العرض الحقيقي لمجموعة العناصر الفردية قبل التكرار
+            const children = container.children;
+            if(children.length === 0) return;
+            
+            // انتظام الحركة باتجاه اليسار متوافق مع الـ RTL
+            function animate() {
+                if (!isPaused) {
+                    currentTranslate -= speedFactor;
+                    
+                    // إعادة تصفير الحركة بشكل غير ملحوظ هندسياً بمجرد عبور ثلث مسافة الكروت الكاملة
+                    const maxResetWidth = container.scrollWidth / 3;
+                    if (Math.abs(currentTranslate) >= maxResetWidth) {
+                        currentTranslate = 0;
+                    }
+                    container.style.transform = `translate3d(${currentTranslate}px, 0, 0)`;
+                }
+                requestAnimationFrame(animate);
+            }
 
-            setInterval(() => {
-                if (paused) return;
-                const maxScroll = slider.scrollWidth - slider.clientWidth;
-                if (maxScroll <= 0) return;
+            // تفعيل ميزة الإيقاف والتشغيل المرن عند التفاعل
+            container.addEventListener('mouseenter', () => isPaused = true);
+            container.addEventListener('mouseleave', () => isPaused = false);
+            container.addEventListener('touchstart', () => isPaused = true, { passive: true });
+            container.addEventListener('touchend', () => isPaused = false, { passive: true });
 
-                if (slider.scrollLeft <= 0) direction = 1;
-                if (slider.scrollLeft >= maxScroll - 2) direction = -1;
-
-                slider.scrollLeft += direction * speed;
-            }, intervalMs);
+            // بدء المحرك الحركي
+            requestAnimationFrame(animate);
         }
-
-        enableAutoSlider("products-container");
-        enableAutoSlider("testi-container");
     </script>
 
     <script>

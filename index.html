@@ -6,7 +6,7 @@
     <title>الموقع الرسمي | واجهة فاخرة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -26,21 +26,8 @@
 
         /* 1. Header */
         header { position: fixed; top: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .logo{
-display:flex;
-align-items:center;
-gap:10px;
-text-decoration:none;
-font-size:24px;
-font-weight:700;
-color:var(--primary);
-}
-
-.logo img{
-height:55px;
-width:auto;
-display:block;
-}
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 24px; font-weight: 700; color: var(--primary); }
+        .logo img { height: 55px; width: auto; display: block; }
         .nav-links { display: flex; list-style: none; gap: 20px; }
         .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 600; transition: var(--transition); font-size: 14px; }
         .nav-links a:hover { color: var(--accent); }
@@ -75,74 +62,43 @@ display:block;
         .feat-box h3 { margin-bottom: 8px; font-size: 18px; }
         .feat-box p { color: var(--text-light); font-size: 14px; }
 
-        /* 5. Products */
-        .products-grid{
-display:flex;
-overflow-x:auto;
-gap:20px;
-padding:10px 5px;
-scroll-behavior:smooth;
-scroll-snap-type:x mandatory;
--webkit-overflow-scrolling:touch;
-scrollbar-width:none;
-}
+        /* 5. Products (horizontal scroll carousel) */
+        .products-grid {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 10px 5px;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .products-grid::-webkit-scrollbar { display: none; }
 
-.products-grid::-webkit-scrollbar{
-display:none;
-}
+        .prod-card {
+            min-width: 270px;
+            max-width: 270px;
+            flex: 0 0 auto;
+            scroll-snap-align: start;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: var(--transition);
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+        }
+        .prod-card:hover { transform: translateY(-6px); box-shadow: 0 10px 25px rgba(0,0,0,0.12); }
 
-.prod-card{
-min-width:270px;
-max-width:270px;
-flex:0 0 auto;
-scroll-snap-align:start;
-background:#fff;
-border:1px solid #eee;
-border-radius:10px;
-overflow:hidden;
-transition:.3s;
-}
-
-.prod-card:hover{
-transform:translateY(-6px);
-box-shadow:0 10px 25px rgba(0,0,0,.12);
-}
-        @media(max-width:768px){
-.floating-wa{
-
-width:52px;
-
-height:52px;
-
-font-size:24px;
-
-left:15px;
-
-bottom:15px;
-
-}
-.prod-card{
-min-width:180px;
-max-width:180px;
-}
-
-.prod-title{
-font-size:13px;
-}
-
-.prod-price{
-font-si { .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } .prod-img-wrapper { aspect-ratio: 1/1 !important; } .prod-title { font-size: 13px !important; } .prod-price { font-size: 15px !important; } .btn-prod-order { font-size: 12px !important; padding: 8px !important; } }
-        .prod-card { background: #fff; border: 1px solid #eee; border-radius: 4px; overflow: hidden; transition: var(--transition); text-align: right; display: flex; flex-direction: column; }
-        .prod-card:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.08); transform: translateY(-3px); }
         .prod-img-wrapper { width: 100%; aspect-ratio: 1/1; position: relative; background: #fafafa; }
         .prod-img { width: 100%; height: 100%; object-fit: cover; }
         .prod-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: var(--accent); font-size: 10px; font-weight: bold; padding: 4px 8px; border-radius: 2px; }
         .prod-info { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .prod-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; line-clamp: 2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .prod-desc { font-size: 12px; color: var(--text-light); margin-bottom: 10px; line-clamp: 2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .prod-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .prod-desc { font-size: 12px; color: var(--text-light); margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .prod-price { color: var(--accent); font-weight: 700; font-size: 17px; margin-bottom: 12px; }
         .btn-prod-order { background: var(--primary); color: white; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 10px; text-decoration: none; font-weight: 600; border-radius: 4px; transition: var(--transition); text-align: center; font-size: 13px; margin-top: auto; }
-        .
 
         /* 6. Offers Banner */
         .offers-banner { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1479064555552-3ef4979f8908?q=80&w=1600') no-repeat center center/cover; color: white; padding: 80px 20px; }
@@ -154,10 +110,24 @@ font-si { .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } .
         .why-point { margin-bottom: 15px; display: flex; gap: 10px; align-items: flex-start; }
         .why-point i { color: var(--accent); margin-top: 5px; }
 
-        /* 8. Testimonials */
-        .testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .testi-card { background: #fff; border: 1px solid #eee; padding: 25px; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); text-align: right; }
+        /* 8. Testimonials (horizontal scroll slider) */
+        .testi-grid {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 10px 5px;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .testi-grid::-webkit-scrollbar { display: none; }
+        .testi-card { min-width: 300px; max-width: 300px; flex: 0 0 auto; scroll-snap-align: start; background: #fff; border: 1px solid #eee; padding: 25px; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); text-align: right; }
         .testi-stars { color: #ffc107; margin-bottom: 10px; text-align: right; }
+
+        @media (max-width: 768px) {
+            .testi-card { min-width: 240px; max-width: 240px; }
+        }
 
         /* 9. FAQs */
         .faqs { background: var(--bg-light); }
@@ -171,75 +141,50 @@ font-si { .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } .
         footer { background: #000; color: #777; padding: 30px 5%; font-size: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-top: 1px solid #222; }
         .footer-socials a { color: white; margin-right: 15px; font-size: 18px; transition: var(--transition); }
         .footer-socials a:hover { color: var(--accent); }
-/* زر واتساب ثابت */
 
-.floating-wa{
+        /* Floating WhatsApp button */
+        .floating-wa {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background: #25D366;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            text-decoration: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            z-index: 9999;
+            transition: 0.3s;
+        }
+        .floating-wa:hover { transform: scale(1.1); background: #1ebe5d; }
 
-position:fixed;
-
-bottom:20px;
-
-left:20px;
-
-width:60px;
-
-height:60px;
-
-background:#25D366;
-
-color:#fff;
-
-border-radius:50%;
-
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
-font-size:30px;
-
-text-decoration:none;
-
-box-shadow:0 10px 25px rgba(0,0,0,.25);
-
-z-index:9999;
-
-transition:.3s;
-
-}
-
-.floating-wa:hover{
-
-transform:scale(1.1);
-
-background:#1ebe5d;
-
-}
-        @media (max-width:768px){
-
-.nav-links{
-display:none;
-}
-
-.hero h1{
-font-size:30px;
-}
-
-footer{
-flex-direction:column;
-text-align: .nav-links { display: none; } .hero h1 { font-size: 30px; } footer { flex-direction: column; text-align: center; } }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .floating-wa { width: 52px; height: 52px; font-size: 24px; left: 15px; bottom: 15px; }
+            .products-grid { gap: 12px; }
+            .prod-card { min-width: 180px; max-width: 180px; }
+            .prod-img-wrapper { aspect-ratio: 1/1; }
+            .prod-title { font-size: 13px; }
+            .prod-price { font-size: 15px; }
+            .btn-prod-order { font-size: 12px; padding: 8px; }
+            .nav-links { display: none; }
+            .hero h1 { font-size: 30px; }
+            footer { flex-direction: column; text-align: center; }
+        }
     </style>
 </head>
 <body>
 
     <header>
         <a href="#" class="logo">
-    <img id="logo-img" src="logo.png" alt="Logo" style="height:55px;">
-    <a href="#" class="logo">
-    <img id="logo-img" src="logo.png" alt="Logo" loading="lazy">
-    <span id="logo-text">جاري التحميل...</span>
-</a> 
+            <img id="logo-img" src="logo.png" alt="Logo" loading="lazy">
+            <span id="logo-text">جاري التحميل...</span>
+        </a>
         <ul class="nav-links">
             <li><a href="#">الرئيسية</a></li>
             <li><a href="#products">المنتجات</a></li>
@@ -304,9 +249,10 @@ text-align: .nav-links { display: none; } .hero h1 { font-size: 30px; } footer {
             <a href="#" id="ig-link" target="_blank"><i class="fab fa-instagram"></i></a>
         </div>
     </footer>
-<a href="#" id="floating-wa" class="floating-wa" target="_blank">
-    <i class="fab fa-whatsapp"></i>
-</a>
+
+    <a href="#" id="floating-wa" class="floating-wa" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <script>
         // إعدادات Firebase الخاصة بمشروعك
@@ -319,19 +265,30 @@ text-align: .nav-links { display: none; } .hero h1 { font-size: 30px; } footer {
             messagingSenderId: "599861767922",
             appId: "1:599861767922:web:04c16f7efc385680842a6b"
         };
-        
+
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+
+        // دالة بسيطة للحماية من هجمات XSS عند حقن نصوص قادمة من قاعدة البيانات
+        function escapeHtml(str) {
+            if (str === undefined || str === null) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
         // الاستماع لايف لمسار اللوحة الفاخرة الموحد brandStoreData
         database.ref('brandStoreData').on('value', (snapshot) => {
             const data = snapshot.val();
-            if(!data) return;
+            if (!data) return;
 
             // 1. تحديث النصوص وقنوات التواصل
             const brandName = data.brandName || "متجر الملابس";
             const currentWhatsapp = data.whatsapp || "201068424130";
-            
+
             document.getElementById('logo-text').innerText = brandName;
             document.getElementById('footer-brand').innerText = brandName;
             document.getElementById('hero-title').innerText = data.heroTitle || "أحدث صيحات الموضة والملابس";
@@ -341,7 +298,7 @@ text-align: .nav-links { display: none; } .hero h1 { font-size: 30px; } footer {
 
             // تحديث روابط التواصل والواتساب
             const waUrl = `https://api.whatsapp.com/send?phone=${currentWhatsapp}`;
-document.getElementById("floating-wa").href = waUrl;
+            document.getElementById('floating-wa').href = waUrl;
             document.getElementById('header-wa-btn').href = waUrl;
             document.getElementById('hero-wa-btn').href = waUrl;
             document.getElementById('fb-link').href = data.facebook || "https://facebook.com";
@@ -349,12 +306,12 @@ document.getElementById("floating-wa").href = waUrl;
 
             // 2. تحديث قسم "لماذا نحن"
             const whyContainer = document.getElementById('why-container');
-            if(data.whyPoints) {
+            if (data.whyPoints) {
                 const lines = data.whyPoints.split('\n').filter(line => line.trim() !== '');
                 whyContainer.innerHTML = lines.map(line => `
                     <div class="why-point">
                         <i class="fas fa-check-circle"></i>
-                        <p>${line}</p>
+                        <p>${escapeHtml(line)}</p>
                     </div>
                 `).join('');
             } else {
@@ -363,20 +320,19 @@ document.getElementById("floating-wa").href = waUrl;
 
             // 3. تحديث المنتجات
             const productsContainer = document.getElementById('products-container');
-            if(data.products && data.products.length > 0) {
+            if (data.products && data.products.length > 0) {
                 productsContainer.innerHTML = data.products.map(p => {
-                    const textMessage = `طلب شراء منتج: ${p.name}\nالسعر: ${p.price}`;
-                    const waOrderUrl = `https://api.whatsapp.com/send?phone=${currentWhatsapp}&text=${encodeURIComponent(textMessage)}`;
                     return `
                         <div class="prod-card">
                             <div class="prod-img-wrapper">
-                                <img class="prod-img" src="${p.img || 'https://via.placeholder.com/300?text=No+Image'}" alt="${p.name}">
+                                <img class="prod-img" src="${escapeHtml(p.img) || 'https://via.placeholder.com/300?text=No+Image'}" alt="${escapeHtml(p.name)}" loading="lazy">
                             </div>
                             <div class="prod-info">
                                 <div>
-                                    <h3 class="prod-title">${p.name}</h3>
+                                    <h3 class="prod-title">${escapeHtml(p.name)}</h3>
                                 </div>
-                                <div><p class="prod-price">${p.price}</p>
+                                <div>
+                                    <p class="prod-price">${escapeHtml(p.price)}</p>
                                 </div>
                             </div>
                         </div>`;
@@ -387,12 +343,12 @@ document.getElementById("floating-wa").href = waUrl;
 
             // 4. تحديث آراء العملاء
             const testiContainer = document.getElementById('testi-container');
-            if(data.testimonials && data.testimonials.length > 0) {
+            if (data.testimonials && data.testimonials.length > 0) {
                 testiContainer.innerHTML = data.testimonials.map(t => `
                     <div class="testi-card">
                         <div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                        <p style="font-style:italic; color:#555; margin-bottom:10px;">"${t.text}"</p>
-                        <strong style="font-size:14px; color:#222;">- ${t.author}</strong>
+                        <p style="font-style:italic; color:#555; margin-bottom:10px;">"${escapeHtml(t.text)}"</p>
+                        <strong style="font-size:14px; color:#222;">- ${escapeHtml(t.author)}</strong>
                     </div>
                 `).join('');
             } else {
@@ -401,11 +357,11 @@ document.getElementById("floating-wa").href = waUrl;
 
             // 5. تحديث الأسئلة الشائعة
             const faqsContainer = document.getElementById('faqs-container');
-            if(data.faqs && data.faqs.length > 0) {
+            if (data.faqs && data.faqs.length > 0) {
                 faqsContainer.innerHTML = data.faqs.map(f => `
                     <div class="faq-item">
-                        <div class="faq-q" onclick="toggleFaq(this)">${f.q} <i class="fas fa-chevron-down"></i></div>
-                        <div class="faq-a"><p>${f.a}</p></div>
+                        <div class="faq-q" onclick="toggleFaq(this)">${escapeHtml(f.q)} <i class="fas fa-chevron-down"></i></div>
+                        <div class="faq-a"><p>${escapeHtml(f.a)}</p></div>
                     </div>
                 `).join('');
             } else {
@@ -416,18 +372,40 @@ document.getElementById("floating-wa").href = waUrl;
         // دالة فتح وإغلاق الأسئلة الشائعة برفق
         function toggleFaq(element) {
             const item = element.parentElement;
-            const isSubmittion = item.classList.contains('active');
+            const isOpen = item.classList.contains('active');
             document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
-            if (!isSubmittion) {
+            if (!isOpen) {
                 item.classList.add('active');
             }
         }
-    const productSlider=document.getElementById("products-container");
 
-let direction=1;
+        // تمرير تلقائي هادئ لأي شريط أفقي (منتجات / آراء العملاء)، يتوقف عند تمرير الفأرة فوقه
+        function enableAutoSlider(elementId, speed = 1, intervalMs = 30) {
+            const slider = document.getElementById(elementId);
+            if (!slider) return;
 
-setInterval(()=>{
+            let direction = 1;
+            let paused = false;
 
-if(!productSlider) return;
+            slider.addEventListener('mouseenter', () => paused = true);
+            slider.addEventListener('mouseleave', () => paused = false);
+            slider.addEventListener('touchstart', () => paused = true, { passive: true });
+            slider.addEventListener('touchend', () => paused = false, { passive: true });
+
+            setInterval(() => {
+                if (paused) return;
+                const maxScroll = slider.scrollWidth - slider.clientWidth;
+                if (maxScroll <= 0) return;
+
+                if (slider.scrollLeft <= 0) direction = 1;
+                if (slider.scrollLeft >= maxScroll - 2) direction = -1;
+
+                slider.scrollLeft += direction * speed;
+            }, intervalMs);
+        }
+
+        enableAutoSlider("products-container");
+        enableAutoSlider("testi-container");
+    </script>
 </body>
 </html>

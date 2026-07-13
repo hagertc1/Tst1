@@ -112,6 +112,272 @@
     </div>
 
     <div class="box">
+        <button onclick="saveAllStoreData()" style="width:100%; background:#25D366; font-size:18px; padding:15px;">حفظ وتحديث المتجر بالكامل الآن سحابياً 🚀</button>
+        <div id="saveStatus" class="status-msg"></div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC8gv5mxQ2JaMDkQeWTpnit1CHgMh_8zL0",
+            authDomain: "tricycle-for-clothes.firebaseapp.com",
+            databaseURL: "https://tricycle-for-clothes-default-rtdb.firebaseio.com",
+            projectId: "tricycle-for-clothes",
+            storageBucket: "tricycle-for-clothes.firebasestorage.app",
+            messagingSenderId: "599861767922",
+            appId: "1:599861767922:web:04c16f7efc385680842a6b"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function escapeAttr(str) {
+            if (str === undefined || str === null) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // جلب البيانات
+        db.ref('brandStoreData').once('value').then(snapshot => {
+            const data = snapshot.val();
+            if (!data) return;
+
+            document.getElementById('brandName').value = data.brandName || '';
+            document.getElementById('imgbbApiKey').value = data.imgbbApiKey || '';
+            document.getElementById('logoUrl').value = data.logoUrl || '';
+            document.getElementById('heroBgUrl').value = data.heroBgUrl || '';
+            document.getElementById('offerBgUrl').value = data.offerBgUrl || '';
+            updatePreview(document.getElementById('logoUrl'), '#logoPreview');
+            updatePreview(document.getElementById('heroBgUrl'), '#heroBgPreview');
+            updatePreview(document.getElementById('offerBgUrl'), '#offerBgPreview');
+            document.getElementById('heroTitle').value = data.heroTitle || '';
+            document.getElementById('heroDesc').value = data.heroDesc || '';
+            document.getElementById('offerTitle').value = data.offerTitle || '';
+            document.getElementById('offerDesc').value = data.offerDesc || '';
+            document.getElementById('whatsapp').value = data.whatsapp || '';
+            document.getElementById('facebook').value = data.facebook || '';
+            document.getElementById('instagram').value = data.instagram || '';
+            document.getElementById('whyPoints').value = data.whyPoints || '';
+
+            if (data.products) data.products.forEach(p => addProductRow(p.name, p.price, p.img));
+            if (data.testimonials) data.testimonials.forEach(t => addTestiRow(typeof t === 'string' ? t : (t.img || '')));
+            if (data.faqs) data.faqs.forEach(f => addFaqRow(f.q, f.a));
+        }).catch(err => {
+            console.error(err);
+            showStatus('saveStatus', 'تعذر تحميل البيانات الحالية: ' + err.message, false);
+        });
+
+        function addProductRow(name = '', price = '', img = '') {
+            const div = document.createElement('div'); div.className = 'item-row product-item';
+            div.innerHTML = `
+                <input type="text" placeholder="اسم المنتج" value="${escapeAttr(name)}" style="width:22%; margin-left:1%;">
+                <input type="text" placeholder="السعر" value="${escapeAttr(price)}" style="width:15%; margin-left:1%;">
+                <input type="text" class="prod-img-input" placeholder="رابط صورة المنتج المباشر" value="${escapeAttr(img)}" style="width:30%; margin-left:1%;" oninput="updatePreview(this, '.prod-preview')">
+                <span class="upload-wrap">
+                    <input type="file" accept="image/*" class="upload-file-input" style="display:none;" onchange="uploadFileToStorage(this, 'products')">
+                    <button type="button" class="upload-btn" onclick="this.parentElement.querySelector('.upload-file-input').click()">رفع صورة</button>
+                    <span class="upload-progress-bar"><span class="upload-progress-fill"></span></span>
+                    <span class="upload-status"></span>
+                </span>
+                <img class="prod-preview" src="${escapeAttr(img)}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; vertical-align:middle; margin-left:1%; ${img ? '' : 'display:none;'}" onerror="this.style.display='none';">
+                <button onclick="removeRow(this)" style="background:red; padding:5px 10px;">حذف</button>`;
+            document.getElementById('products-list').appendChild(div);
+        }
+        function addEmptyProduct() { addProductRow(); }
+
+        function addTestiRow(img = '') {
+            const div = document.createElement('div'); div.className = 'item-row testi-item';
+            div.innerHTML = `
+                <input type="text" class="testi-img-input" placeholder="رابط صورة (سكرين شوت رأي العميل)" value="${escapeAttr(img)}" style="width:50%; margin-left:1%;" oninput="updatePreview(this, '.testi-preview')">
+                <span class="upload-wrap">
+                    <input type="file" accept="image/*" class="upload-file-input" style="display:none;" onchange="uploadFileToStorage(this, 'testimonials')">
+                    <button type="button" class="upload-btn" onclick="this.parentElement.querySelector('.upload-file-input').click()">رفع صورة</button>
+                    <span class="upload-progress-bar"><span class="upload-progress-fill"></span></span>
+                    <span class="upload-status"></span>
+                </span>
+                <img class="testi-preview" src="${escapeAttr(img)}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; vertical-align:middle; margin-left:1%; ${img ? '' : 'display:none;'}" onerror="this.style.display='none';">
+                <button onclick="removeRow(this)" style="background:red; padding:5px 10px;">حذف</button>`;
+            document.getElementById('testi-list').appendChild(div);
+        }
+        function addEmptyTesti() { addTestiRow(''); }
+
+        function updatePreview(input, previewSelector) {
+            const preview = input.parentElement.querySelector(previewSelector);
+            if (!preview) return;
+            if (input.value.trim()) {
+                preview.src = input.value.trim();
+                preview.style.display = 'inline-block';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        function performUpload(file, folder, { onProgress, onError, onComplete }) {
+            const apiKey = document.getElementById('imgbbApiKey').value.trim();
+            if (!apiKey) {
+                onError({ message: 'من فضلك أدخل مفتاح ImgBB API أولاً.' });
+                return;
+            }
+            const formData = new FormData();
+            formData.append('image', file);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `https://api.imgbb.com/1/upload?key=${encodeURIComponent(apiKey)}`);
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+            });
+            xhr.onload = () => {
+                try {
+                    const res = JSON.parse(xhr.responseText);
+                    if (xhr.status >= 200 && xhr.status < 300 && res.success) {
+                        onComplete(res.data.url);
+                    } else {
+                        onError({ message: res.error?.message || 'فشل الرفع' });
+                    }
+                } catch (e) {
+                    onError({ message: 'خطأ في الاستجابة' });
+                }
+            };
+            xhr.onerror = () => onError({ message: 'تعذر الاتصال' });
+            xhr.send(formData);
+        }
+
+        function bindUploadUi(wrap) {
+            const progressBar = wrap.querySelector('.upload-progress-bar');
+            const progressFill = wrap.querySelector('.upload-progress-fill');
+            const statusEl = wrap.querySelector('.upload-status');
+            return {
+                start() { progressBar.style.display = 'inline-block'; statusEl.textContent = 'جاري الرفع...'; },
+                progress(pct) { progressFill.style.width = pct + '%'; statusEl.textContent = pct + '%'; },
+                error(msg) {
+                    progressBar.style.display = 'none';
+                    statusEl.textContent = 'فشل';
+                    alert('خطأ: ' + msg);
+                },
+                done() {
+                    statusEl.textContent = 'تم الرفع ✅';
+                    progressFill.style.width = '100%';
+                    setTimeout(() => { progressBar.style.display = 'none'; progressFill.style.width = '0%'; statusEl.textContent = ''; }, 2000);
+                }
+            };
+        }
+
+        function uploadFileToStorage(fileInput, folder) {
+            const file = fileInput.files[0];
+            if (!file) return;
+            const row = fileInput.closest('.item-row');
+            const ui = bindUploadUi(fileInput.closest('.upload-wrap'));
+            const urlInput = row.querySelector('.prod-img-input, .testi-img-input');
+            const preview = row.querySelector('.prod-preview, .testi-preview');
+
+            ui.start();
+            performUpload(file, folder, {
+                onProgress: pct => ui.progress(pct),
+                onError: err => ui.error(err.message),
+                onComplete: url => {
+                    urlInput.value = url;
+                    if (preview) { preview.src = url; preview.style.display = 'inline-block'; }
+                    ui.done();
+                }
+            });
+        }
+
+        function uploadSingleImage(fileInput, folder, targetInputId, previewId) {
+            const file = fileInput.files[0];
+            if (!file) return;
+            const ui = bindUploadUi(fileInput.closest('.upload-wrap'));
+            const urlInput = document.getElementById(targetInputId);
+            const preview = document.getElementById(previewId);
+            ui.start();
+            performUpload(file, folder, {
+                onProgress: pct => ui.progress(pct),
+                onError: err => ui.error(err.message),
+                onComplete: url => {
+                    urlInput.value = url;
+                    if (preview) { preview.src = url; preview.style.display = 'inline-block'; }
+                    ui.done();
+                }
+            });
+        }
+
+        function addFaqRow(q = '', a = '') {
+            const div = document.createElement('div'); div.className = 'item-row faq-item-row';
+            div.innerHTML = `
+                <input type="text" placeholder="السؤال" value="${escapeAttr(q)}" style="width:45%; margin-left:1%;">
+                <textarea placeholder="الإجابة" style="width:45%; margin-left:1%; height:40px; vertical-align:middle;">${escapeAttr(a)}</textarea>
+                <button onclick="removeRow(this)" style="background:red; padding:5px 10px;">حذف</button>`;
+            document.getElementById('faqs-list').appendChild(div);
+        }
+        function addEmptyFaq() { addFaqRow(); }
+
+        function removeRow(button) {
+            if (confirm('هل أنت متأكد من حذف هذا العنصر؟')) {
+                button.parentElement.remove();
+            }
+        }
+
+        function showStatus(elementId, message, ok) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = 'status-msg ' + (ok ? 'status-ok' : 'status-err');
+        }
+
+        function saveAllStoreData() {
+            const products = [];
+            document.querySelectorAll('.product-item').forEach(el => {
+                const inputs = el.querySelectorAll('input[type="text"]');
+                products.push({ name: inputs[0].value, price: inputs[1].value, img: inputs[2].value });
+            });
+
+            const testimonials = [];
+            document.querySelectorAll('.testi-item').forEach(el => {
+                const url = el.querySelector('.testi-img-input').value.trim();
+                if (url) testimonials.push({ img: url });
+            });
+
+            const faqs = [];
+            document.querySelectorAll('.faq-item-row').forEach(el => {
+                const q = el.querySelector('input').value;
+                const a = el.querySelector('textarea').value;
+                faqs.push({ q: q, a: a });
+            });
+
+            const finalData = {
+                brandName: document.getElementById('brandName').value,
+                imgbbApiKey: document.getElementById('imgbbApiKey').value,
+                logoUrl: document.getElementById('logoUrl').value,
+                heroBgUrl: document.getElementById('heroBgUrl').value,
+                offerBgUrl: document.getElementById('offerBgUrl').value,
+                heroTitle: document.getElementById('heroTitle').value,
+                heroDesc: document.getElementById('heroDesc').value,
+                offerTitle: document.getElementById('offerTitle').value,
+                offerDesc: document.getElementById('offerDesc').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                facebook: document.getElementById('facebook').value,
+                instagram: document.getElementById('instagram').value,
+                whyPoints: document.getElementById('whyPoints').value,
+                products: products,
+                testimonials: testimonials,
+                faqs: faqs
+            };
+
+            showStatus('saveStatus', 'جاري الحفظ...', true);
+
+            db.ref('brandStoreData').set(finalData)
+                .then(() => showStatus('saveStatus', 'تم التحديث بنجاح! 🌟', true))
+                .catch(err => showStatus('saveStatus', 'خطأ في الحفظ: ' + err.message, false));
+        }
+    </script>
+</body>
+        </html>
+    <div class="box">
+        <h3>٤. قسم الأسئلة الشائعة</h3>
+        <div id="faqs-list"></div>
+        <button onclick="addEmptyFaq()">+ إضافة سؤال جديد</button>
+    </div>
+
+    <div class="box">
         <h3>٥. تنبيهات بوت تيليجرام</h3>
         <p class="hint" style="margin-bottom:15px;">عند تفعيل هذا القسم، هيوصلك إشعار على تيليجرام في كل مرة تحفظ فيها تحديثات المتجر. أنشئ بوت من <strong>BotFather@</strong> على تيليجرام، وهيديك التوكن. لمعرفة الـ Chat ID ابعت أي رسالة للبوت بتاعك، وافتح الرابط: https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates وهتلاقي الرقم جوه "chat":{"id": ...}</p>
         <div class="group"><label>توكن البوت (Bot Token)</label><input type="text" id="tgBotToken" placeholder="مثال: 123456789:ABCDefGhIJKlmNoPQRstuVWXyz"></div>
